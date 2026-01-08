@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "Householder tridiagonalization algorithm",
+    "date": "2026.01.01",
+    "category": "Algorithm",
+    "excerpt": "---\r\ntitle: Householder tridiagonalization algorithm\r\ncategory: Algorithm\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 普适算法\r\npython\r\nimport...",
+    "path": "_posts/algorithm/Householder tridiagonalization algorithm.md",
+    "slug": "householder-tridiagonalization-algorithm"
+  },
+  {
+    "id": 2,
+    "title": "蒙特卡洛计算阴影面积",
+    "date": "2026.01.01",
+    "category": "Algorithm",
+    "excerpt": "---\r\ntitle: 蒙特卡洛计算阴影面积\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n some packages and input\r\npython\r\nimport numpy as np\r\nimport mat...",
+    "path": "_posts/algorithm/Monte Carlo method.md",
+    "slug": "monte-carlo-method"
+  },
+  {
+    "id": 3,
+    "title": "Classic Sort",
+    "date": "2026.01.01",
+    "category": "Algorithm",
+    "excerpt": "---\r\ntitle: Classic Sort\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n some packages and input\r\npython\r\nimport random\r\nimport time...",
+    "path": "_posts/algorithm/sort.md",
+    "slug": "sort"
+  },
+  {
+    "id": 4,
+    "title": "Traveling Salesman Problem",
+    "date": "2026.01.01",
+    "category": "Algorithm",
+    "excerpt": "---\r\ntitle: Traveling Salesman Problem\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n The problem\r\nA traveling salesman plans to do busi...",
+    "path": "_posts/algorithm/TSP-GA.md",
+    "slug": "tsp-ga"
+  },
+  {
+    "id": 5,
+    "title": "Basics of neural networks",
+    "date": "2026.01.01",
+    "category": "Machine learining",
+    "excerpt": "---\r\ntitle: Basics of neural networks\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Application Network\r\nImplement...",
+    "path": "_posts/aml/Basics of neural networks.md",
+    "slug": "basics-of-neural-networks"
+  },
+  {
+    "id": 6,
+    "title": "Regularized Logistic Regression",
+    "date": "2026.01.01",
+    "category": "Machine learining",
+    "excerpt": "---\r\ntitle:  Regularized Logistic Regression\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Regularized Logistic Reg...",
+    "path": "_posts/aml/Regularized Logistic Regression.md",
+    "slug": "regularized-logistic-regression"
+  },
+  {
+    "id": 7,
+    "title": "AML project-Transfer Graph Neural Networks",
+    "date": "2026.01.01",
+    "category": "Machine learining",
+    "excerpt": "---\r\ntitle: AML project-Transfer Graph Neural Networks\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Abstract\r\nCor...",
+    "path": "_posts/aml/TransferGraphNeuralNetworks.md",
+    "slug": "transfergraphneuralnetworks"
+  },
+  {
+    "id": 8,
+    "title": "VAE and CVAE",
+    "date": "2026.01.01",
+    "category": "Machine learining",
+    "excerpt": "---\r\ntitle: VAE and CVAE\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Basics of VAE\r\n$$\r\n\\log p^\\left(x^{(i)}\\ri...",
+    "path": "_posts/aml/VAE and CVAE.md",
+    "slug": "vae-and-cvae"
+  },
+  {
+    "id": 9,
+    "title": "识别男女EEG的一个简单CNN",
+    "date": "2026.01.01",
+    "category": "EEG",
+    "excerpt": "---\r\ntitle: 识别男女EEG的一个简单CNN\r\ncategory: EEG\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 读取并聚类\r\n包括读取，清洗，转换和聚类\r\n 读取和聚类\r\n python\r\ndef read...",
+    "path": "_posts/EEG/EEG male female.md",
+    "slug": "eeg-male-female"
+  },
+  {
+    "id": 10,
+    "title": "计算两个participants之间的PLV或者WPLI",
+    "date": "2026.01.01",
+    "category": "EEG",
+    "excerpt": "---\r\ntitle: 计算两个participants之间的PLV或者WPLI\r\ncategory: EEG\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 计算流程\r\n包括读取，清洗，转换，ICA，计算\r\n 导入包\r\n py...",
+    "path": "_posts/EEG/Phase Locking Value.md",
+    "slug": "phase-locking-value"
+  }
+]
