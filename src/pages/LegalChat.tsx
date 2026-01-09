@@ -37,7 +37,7 @@ const LegalChat: React.FC = () => {
     const [kbLoading, setKbLoading] = useState(false);
     const [kbError, setKbError] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
-    const [enableAdvice, setEnableAdvice] = useState(false);
+    const [useDocs, setUseDocs] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -71,10 +71,10 @@ const LegalChat: React.FC = () => {
     }, [sessionId]);
 
     useEffect(() => {
-        if (kbFiles.length === 0 && enableAdvice) {
-            setEnableAdvice(false);
+        if (kbFiles.length === 0 && useDocs) {
+            setUseDocs(false);
         }
-    }, [kbFiles, enableAdvice]);
+    }, [kbFiles, useDocs]);
 
     const sendMessage = async () => {
         if (!input.trim()) return;
@@ -93,7 +93,7 @@ const LegalChat: React.FC = () => {
                 body: JSON.stringify({
                     message: input,
                     session_id: sessionId,
-                    task: enableAdvice ? 'advice' : undefined
+                    use_docs: useDocs
                 }),
             });
 
@@ -340,11 +340,11 @@ const LegalChat: React.FC = () => {
                     }}>
                         <input
                             type="checkbox"
-                            checked={enableAdvice}
+                            checked={useDocs}
                             disabled={kbFiles.length === 0}
-                            onChange={(e) => setEnableAdvice(e.target.checked)}
+                            onChange={(e) => setUseDocs(e.target.checked)}
                         />
-                        Advice mode (requires citations)
+                        使用文档
                     </label>
                     <input
                         ref={fileInputRef}
