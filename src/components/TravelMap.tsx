@@ -1,25 +1,14 @@
 import React from 'react';
-import {
-    ComposableMap,
-    Geographies,
-    Geography,
-    Marker
-} from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
+import { motion } from 'framer-motion';
 
-// TopoJSON with ISO_A3 properties
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
-// Note: Some sources use numeric IDs, some use ISO. I'll stick to a standard one and add name-based matching if needed.
 
-// Visited countries list (ISO Alpha-3 and common names for robustness)
 const visited = [
     "UKR", "JPN", "HKG", "DEU", "VAT", "ITA", "ESP", "PRT", "GRC",
-    "LVA", "EGY", "SAU", "QAT", "AUT", "CHE", "FRA", "GBR", "IRL", "ISL", "NLD", "CHN",
-    "Ukraine", "Japan", "Hong Kong", "Germany", "Vatican City", "Italy", "Spain", "Portugal", "Greece",
-    "Latvia", "Egypt", "Saudi Arabia", "Qatar", "Austria", "Switzerland", "France", "United Kingdom", "Ireland", "Iceland", "Netherlands", "China",
-    "Holy See", "United Kingdom of Great Britain and Northern Ireland"
+    "LVA", "EGY", "SAU", "QAT", "AUT", "CHE", "FRA", "GBR", "IRL", "ISL", "NLD", "CHN"
 ];
 
-// Markers for small places
 const markers = [
     { markerOffset: -12, name: "Hong Kong", coordinates: [114.1694, 22.3193] },
     { markerOffset: 12, name: "Vatican City", coordinates: [12.4534, 41.9029] },
@@ -27,56 +16,49 @@ const markers = [
 
 const TravelMap: React.FC = () => {
     return (
-        <section style={{ marginTop: 'var(--space-xxl)', marginBottom: 'var(--space-xxl)' }}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                marginBottom: 'var(--space-xl)',
-                borderLeft: '4px solid var(--accent-blue)',
-                paddingLeft: 'var(--space-md)'
-            }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>TRAVEL_LOGS</h2>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', letterSpacing: '1px' }}>
-                    {visited.filter(v => v.length > 3).length / 2 + 3} COUNTRIES_VISITED
-                </span>
+        <section>
+            <div className="flex justify-between items-end mb-12 border-l-4 border-accent-blue pl-6">
+                <div>
+                    <h2 className="text-3xl md:text-4xl font-outfit font-black tracking-tighter uppercase">Travel_Logs</h2>
+                    <p className="text-text-dim font-mono text-xs mt-2 font-bold tracking-widest opacity-50 uppercase">Geospatial footprint</p>
+                </div>
+                <div className="text-right">
+                    <span className="text-[20px] font-outfit font-black text-accent-blue tracking-tighter leading-none block">
+                        {visited.length}
+                    </span>
+                    <span className="text-[8px] font-bold tracking-widest text-text-dim uppercase">Nodes discovered</span>
+                </div>
             </div>
 
-            <div className="glass" style={{
-                padding: '20px',
-                borderRadius: '12px',
-                background: 'var(--bg-card)',
-                overflow: 'hidden'
-            }}>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                className="glass rounded-3xl p-4 md:p-8 overflow-hidden relative"
+            >
+                <div className="absolute top-4 right-8 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-accent-blue shadow-[0_0_8px_rgba(0,242,255,0.6)]" />
+                    <span className="text-[10px] font-mono text-text-dim opacity-50 uppercase tracking-tighter">Live Map Renderer v1.0.4</span>
+                </div>
+
                 <ComposableMap
-                    projectionConfig={{
-                        rotate: [-10, 0, 0],
-                        scale: 147
-                    }}
-                    style={{ width: "100%", height: "auto" }}
+                    projectionConfig={{ rotate: [-10, 0, 0], scale: 147 }}
+                    className="w-full h-auto grayscale transition-all duration-700 hover:grayscale-0"
                 >
                     <Geographies geography={geoUrl}>
                         {({ geographies }) =>
                             geographies.map((geo) => {
-                                const { name, NAME, ISO_A3, iso_a3 } = geo.properties;
-                                const geoName = name || NAME;
-                                const geoIso = ISO_A3 || iso_a3 || geo.id;
-
-                                const isVisited = visited.some(v =>
-                                    v.toLowerCase() === geoName?.toLowerCase() ||
-                                    v.toLowerCase() === geoIso?.toLowerCase()
-                                );
-
+                                const iso = geo.properties.ISO_A3 || geo.id;
+                                const isVisited = visited.includes(iso);
                                 return (
                                     <Geography
                                         key={geo.rsmKey}
                                         geography={geo}
-                                        fill={isVisited ? "var(--accent-blue)" : "var(--glass-bg)"}
-                                        stroke="var(--glass-border)"
+                                        fill={isVisited ? "var(--accent-blue)" : "rgba(255,255,255,0.03)"}
+                                        stroke="rgba(255,255,255,0.05)"
                                         strokeWidth={0.5}
                                         style={{
-                                            default: { outline: "none", transition: "all 0.3s" },
-                                            hover: { fill: isVisited ? "var(--accent-glow)" : "var(--glass-border)", outline: "none", cursor: isVisited ? "pointer" : "default" },
+                                            default: { outline: "none" },
+                                            hover: { fill: isVisited ? "#22d3ee" : "rgba(255,255,255,0.1)", outline: "none", cursor: 'crosshair' },
                                             pressed: { outline: "none" },
                                         }}
                                     />
@@ -87,24 +69,19 @@ const TravelMap: React.FC = () => {
 
                     {markers.map(({ name, coordinates, markerOffset }) => (
                         <Marker key={name} coordinates={coordinates as [number, number]}>
-                            <circle r={2} fill="var(--accent-blue)" stroke="#fff" strokeWidth={1} />
+                            <circle r={2} fill="var(--accent-blue)" className="animate-pulse" />
                             <text
                                 textAnchor="middle"
                                 y={markerOffset}
-                                style={{
-                                    fontFamily: "Inter",
-                                    fill: "var(--text-main)",
-                                    fontSize: "9px",
-                                    fontWeight: 600,
-                                    pointerEvents: "none"
-                                }}
+                                className="text-[8px] fill-text-dim font-mono font-bold tracking-tighter opacity-70"
+                                pointerEvents="none"
                             >
-                                {name}
+                                {name.toUpperCase()}
                             </text>
                         </Marker>
                     ))}
                 </ComposableMap>
-            </div>
+            </motion.div>
         </section>
     );
 };

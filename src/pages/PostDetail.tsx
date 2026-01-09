@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Clock, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Clock, Tag, Share2, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -12,7 +12,6 @@ import { Buffer } from 'buffer';
 import postsIndex from '../posts-index.json';
 import 'katex/dist/katex.min.css';
 
-// Fix for gray-matter environment
 if (typeof window !== 'undefined') {
     (window as any).Buffer = Buffer;
 }
@@ -42,41 +41,52 @@ const PostDetail: React.FC = () => {
     }, [id]);
 
     if (loading) {
-        return <div className="container" style={{ paddingTop: 'var(--space-xxl)', color: 'var(--accent-blue)' }}>ACCESSING_DATABASE...</div>;
+        return (
+            <div className="container py-40 flex flex-col items-center justify-center gap-4">
+                <div className="w-12 h-12 border-2 border-accent-blue border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs font-mono font-bold tracking-widest text-accent-blue animate-pulse">ACCESSING_LOG_BUFFER...</span>
+            </div>
+        );
     }
 
     if (!postInfo) {
-        return <div className="container" style={{ paddingTop: 'var(--space-xxl)' }}>Post Not Found.</div>;
+        return <div className="container py-40 text-center text-text-dim font-mono">CRITICAL_ERROR: LOG_NOT_FOUND</div>;
     }
 
     return (
-        <div className="container" style={{ paddingTop: 'var(--space-xxl)', maxWidth: '900px' }}>
-            <Link to="/blog" style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-sm)',
-                color: 'var(--accent-blue)',
-                fontSize: '0.8rem',
-                marginBottom: 'var(--space-xl)',
-                letterSpacing: '1px'
-            }}>
-                <ArrowLeft size={16} /> BACK_TO_ARCHIVE
+        <div className="container py-12 md:py-24 max-w-4xl">
+            <Link to="/blog" className="group inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-accent-blue hover:brightness-125 transition-all mb-12">
+                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
+                BACK_TO_ARCHIVE
             </Link>
 
             <motion.article
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                className="relative"
             >
-                <header style={{ marginBottom: 'var(--space-xxl)', borderBottom: '1px solid var(--border-color)', paddingBottom: 'var(--space-lg)' }}>
-                    <div style={{ display: 'flex', gap: 'var(--space-md)', color: 'var(--text-dim)', fontSize: '0.8rem', marginBottom: 'var(--space-md)' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Clock size={14} /> {postInfo.date}</span>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Tag size={14} /> {postInfo.category}</span>
+                {/* Header Decoration */}
+                <div className="absolute -top-12 -left-12 w-32 h-32 bg-accent-blue/5 rounded-full blur-3xl -z-10" />
+
+                <header className="mb-16 pb-12 border-b border-white/5">
+                    <div className="flex flex-wrap gap-4 text-[10px] font-mono font-bold tracking-tighter text-text-dim mb-6 uppercase">
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                            <Clock size={12} className="text-accent-blue" /> {postInfo.date}
+                        </span>
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent-blue/10 border border-accent-blue/20 text-accent-blue">
+                            <Tag size={12} /> {postInfo.category}
+                        </span>
+                        <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+                            <BookOpen size={12} /> {Math.ceil(content.length / 500)} MIN_READ
+                        </span>
                     </div>
-                    <h1 style={{ fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: 700, lineHeight: 1.2, marginBottom: 'var(--space-md)' }}>{postInfo.title}</h1>
+
+                    <h1 className="text-4xl md:text-6xl font-outfit font-black tracking-tighter leading-[1.1]">
+                        {postInfo.title}
+                    </h1>
                 </header>
 
-                <div className="markdown-content" style={{ color: 'var(--text-main)', fontSize: '1.05rem', lineHeight: 1.8 }}>
+                <div className="markdown-content">
                     <ReactMarkdown
                         remarkPlugins={[remarkGfm, remarkMath]}
                         rehypePlugins={[rehypeKatex, rehypeRaw]}
@@ -85,11 +95,16 @@ const PostDetail: React.FC = () => {
                     </ReactMarkdown>
                 </div>
 
-                <footer style={{ marginTop: 'var(--space-xxl)', padding: 'var(--space-lg)', background: 'var(--bg-card)', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>END_OF_TRANSMISSION</span>
-                    <button style={{ color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Share2 size={16} /> SHARE
-                    </button>
+                <footer className="mt-20 p-8 rounded-3xl glass border-accent-blue/10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold tracking-widest text-text-dim/50">TRANSMISSION_ID</span>
+                        <span className="text-xs font-mono text-accent-blue">UUID-{Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <button className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold tracking-widest hover:bg-white/10 transition-all flex items-center gap-2">
+                            <Share2 size={14} /> SHARE_SIGNAL
+                        </button>
+                    </div>
                 </footer>
             </motion.article>
         </div>

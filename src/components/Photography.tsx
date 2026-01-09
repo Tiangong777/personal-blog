@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const photos = [
     { id: 1, url: '/photos/cyberpunk.png', title: 'Neon Pulse', category: 'Street' },
@@ -8,68 +9,44 @@ const photos = [
 
 const Photography: React.FC = () => {
     return (
-        <section style={{ marginTop: 'var(--space-xxl)' }}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'baseline',
-                marginBottom: 'var(--space-xl)',
-                borderLeft: '4px solid var(--accent-blue)',
-                paddingLeft: 'var(--space-md)'
-            }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>PHOTO_GALLERY</h2>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', letterSpacing: '1px' }}>CAPTURED_MOMENTS</span>
+        <section>
+            <div className="flex justify-between items-end mb-12 border-l-4 border-accent-blue pl-6">
+                <div>
+                    <h2 className="text-3xl md:text-4xl font-outfit font-black tracking-tighter uppercase">Photo_Gallery</h2>
+                    <p className="text-text-dim font-mono text-xs mt-2 font-bold tracking-widest opacity-50 uppercase">Visual Archive</p>
+                </div>
+                <span className="text-[10px] font-bold tracking-[0.2em] text-text-dim uppercase">Captured Moment</span>
             </div>
 
-            <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: 'var(--space-lg)'
-            }}>
-                {photos.map((photo) => (
-                    <div
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {photos.map((photo, index) => (
+                    <motion.div
                         key={photo.id}
-                        className="glass"
-                        style={{
-                            borderRadius: '12px',
-                            overflow: 'hidden',
-                            transition: 'transform var(--transition-fast)',
-                            cursor: 'pointer'
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'translateY(-5px)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'translateY(0)')}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="group relative glass-card rounded-3xl overflow-hidden cursor-crosshair"
                     >
-                        <div style={{ position: 'relative', height: '200px', overflow: 'hidden' }}>
+                        <div className="relative aspect-[4/3] overflow-hidden">
                             <img
                                 src={photo.url}
                                 alt={photo.title}
-                                style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    transition: 'var(--transition-slow)'
-                                }}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             />
-                            <div style={{
-                                position: 'absolute',
-                                top: '12px',
-                                right: '12px',
-                                padding: '4px 12px',
-                                background: 'var(--accent-glow)',
-                                backdropFilter: 'blur(5px)',
-                                borderRadius: '20px',
-                                fontSize: '0.7rem',
-                                color: 'white',
-                                fontWeight: 600
-                            }}>
-                                {photo.category}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                                <span className="px-6 py-2 border border-white/20 rounded-full text-white text-xs font-bold backdrop-blur-md">
+                                    VIEW_FULL_FRAME
+                                </span>
+                            </div>
+                            <div className="absolute top-4 right-4 px-3 py-1 bg-accent-blue/80 backdrop-blur-md rounded-full text-[10px] text-black font-black">
+                                {photo.category.toUpperCase()}
                             </div>
                         </div>
-                        <div style={{ padding: 'var(--space-md)' }}>
-                            <h3 style={{ fontSize: '1rem', marginBottom: '4px' }}>{photo.title}</h3>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Neo_Capture {new Date().getFullYear()}</p>
+                        <div className="p-6">
+                            <h3 className="text-lg font-outfit font-bold group-hover:text-accent-blue transition-colors">{photo.title}</h3>
+                            <p className="text-xs text-text-dim mt-1 font-mono tracking-tighter opacity-50">Neo_Capture // {new Date().getFullYear()}</p>
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
         </section>

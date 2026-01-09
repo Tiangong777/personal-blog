@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
 import PostCard from '../components/PostCard';
@@ -12,37 +13,35 @@ const featuredPosts = [...postsIndex]
 
 const Home: React.FC = () => {
     return (
-        <>
+        <div className="flex flex-col gap-24 md:gap-40">
             <Hero />
-            <main className="container">
+
+            <main className="container space-y-32 md:space-y-48">
                 <Photography />
                 <TravelMap />
 
-                <section style={{ marginTop: 'var(--space-xxl)' }}>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'baseline',
-                        marginBottom: 'var(--space-xl)',
-                        borderLeft: '4px solid var(--accent-blue)',
-                        paddingLeft: 'var(--space-md)'
-                    }}>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 600 }}>FEATURED_LOGS</h2>
-                        <Link to="/blog" style={{ fontSize: '0.8rem', color: 'var(--accent-blue)', letterSpacing: '1px' }}>VIEW_ALL</Link>
+                <section>
+                    <div className="flex justify-between items-end mb-12 border-l-4 border-accent-blue pl-6">
+                        <div>
+                            <h2 className="text-3xl md:text-4xl font-outfit font-black tracking-tighter">FEATURED_LOGS</h2>
+                            <p className="text-text-dim font-mono text-sm mt-2 font-bold tracking-widest opacity-50 uppercase">Knowledge Base Update</p>
+                        </div>
+                        <Link
+                            to="/blog"
+                            className="text-xs font-bold tracking-widest text-accent-blue hover:underline underline-offset-8 decoration-2"
+                        >
+                            VIEW_ALL_INDEX
+                        </Link>
                     </div>
 
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                        gap: 'var(--space-lg)'
-                    }}>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {featuredPosts.map((post) => (
                             <PostCard key={post.id} {...post} />
                         ))}
                     </div>
                 </section>
             </main>
-        </>
+        </div>
     );
 };
 
