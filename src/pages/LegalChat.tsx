@@ -13,7 +13,7 @@ interface KbFile {
 }
 
 const LegalChat: React.FC = () => {
-    const API_BASE = 'http://localhost:8000';
+    const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
     const createSessionId = () => {
         if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
             return crypto.randomUUID();
