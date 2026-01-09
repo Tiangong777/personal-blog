@@ -1,5 +1,5 @@
 :root {
-  /* Tech Color Palette */
+  /* Tech Color Palette - Dark (Default) */
   --bg-dark: #050505;
   --bg-card: #0d0d0d;
   --text-main: #e0e0e0;
@@ -23,6 +23,18 @@
   --transition-slow: 0.5s ease;
 }
 
+:root[data-theme='light'] {
+  --bg-dark: #f8f9fa;
+  --bg-card: #ffffff;
+  --text-main: #212529;
+  --text-dim: #6c757d;
+  --accent-blue: #007bff;
+  --accent-glow: rgba(0, 123, 255, 0.2);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+}
+
 @font-face {
   font-family: 'Inter';
   src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
@@ -42,6 +54,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 a {
@@ -156,4 +169,12 @@ ul {
   color: var(--accent-blue);
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
 }
