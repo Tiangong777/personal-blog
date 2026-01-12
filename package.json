@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/parse-posts.cjs && vite",
-    "build": "node scripts/parse-posts.cjs && tsc -b && vite build",
+    "build": "node scripts/parse-posts.cjs && tsc --noEmit && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "parse": "node scripts/parse-posts.cjs"
