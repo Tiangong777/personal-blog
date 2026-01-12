@@ -22,6 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
     { name: 'HOME', path: '/' },
     { name: 'ARCHIVE', path: '/blog' },
     { name: 'AI_AGENT', path: '/chat' },
+    { name: 'PLANNER', path: '/planner' },
     { name: 'LOGS', path: '/about' },
   ];
 

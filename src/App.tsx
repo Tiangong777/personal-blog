@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import BlogList from './pages/BlogList';
 import PostDetail from './pages/PostDetail';
 import LegalChat from './pages/LegalChat';
+import YearEndPlanner from './pages/YearEndPlanner';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -37,6 +38,7 @@ function AppContent() {
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:id" element={<PostDetail />} />
             <Route path="/chat" element={<LegalChat />} />
+            <Route path="/planner" element={<YearEndPlanner />} />
             <Route path="/about" element={
               <div className="container py-20">
                 <div className="glass p-12 rounded-3xl max-w-2xl mx-auto border-accent-blue/20">
