@@ -32,7 +32,7 @@ const LegalChat: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [kbFiles, setKbFiles] = useState<KbFile[]>([]);
     const [kbLoading, setKbLoading] = useState(false);
-    const [kbError, setKbError] = useState<string | null>(null);
+    const [setKbError] = useState<string | null>(null);
     const [uploading, setUploading] = useState(false);
     const [useDocs, setUseDocs] = useState(false);
 
