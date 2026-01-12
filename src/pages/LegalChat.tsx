@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Loader2, FileText, Download, Trash2, Plus } from 'lucide-react';
+import { Send, User, Bot, Loader2, FileText, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Message {
@@ -191,8 +191,8 @@ const LegalChat: React.FC = () => {
                                     {msg.role === 'user' ? <User size={18} /> : <Bot size={18} />}
                                 </div>
                                 <div className={`px-5 py-3 rounded-2xl text-sm leading-relaxed ${msg.role === 'user'
-                                        ? 'bg-accent-blue text-black font-medium'
-                                        : 'bg-white/5 border border-white/5 text-text-main'
+                                    ? 'bg-accent-blue text-black font-medium'
+                                    : 'bg-white/5 border border-white/5 text-text-main'
                                     }`}>
                                     {msg.content}
                                 </div>
