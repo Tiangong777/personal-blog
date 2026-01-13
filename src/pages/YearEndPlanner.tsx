@@ -188,6 +188,26 @@ const YearEndPlanner: React.FC = () => {
                                 <span className="font-mono text-accent-blue">{formatCurrency(drinksCost)}</span>
                             </div>
 
+                            {/* Selected Drinks Details */}
+                            {Object.entries(cart).length > 0 && (
+                                <div className="pl-4 border-l-2 border-white/5 space-y-1">
+                                    {Object.entries(cart).map(([id, qty]) => {
+                                        if (qty === 0) return null;
+                                        const drink = drinks.find(d => d.id === id);
+                                        if (!drink) return null;
+                                        return (
+                                            <div key={id} className="flex justify-between text-xs text-text-dim">
+                                                <div className="flex gap-2">
+                                                    <span className="font-bold text-accent-blue">x{qty}</span>
+                                                    <span>{drink.name}</span>
+                                                </div>
+                                                <span className="font-mono">{formatCurrency(drink.price * qty)}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
                             <div className="h-px bg-white/10 my-2" />
 
                             <div className="flex justify-between items-center text-lg font-bold">
