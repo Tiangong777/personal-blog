@@ -1,6 +1,6 @@
 export interface Drink {
     id: string;
-    category: 'Spirits' | 'Wine' | 'Beer';
+    category: 'Spirits' | 'Wine' | 'Beer' | 'Prizes' | 'RedEnvelope';
     name: string;
     unit: string;
     spec: string;
@@ -56,4 +56,22 @@ export const drinks: Drink[] = [
     { id: 'snow-classic', category: 'Beer', name: '雪花经典', unit: '瓶', spec: '500ml', price: 8.00 },
     { id: 'snow-bingku', category: 'Beer', name: '雪花冰酷', unit: '听', spec: '330ml', price: 2.00 },
     { id: 'xili', category: 'Beer', name: '喜力星银', unit: '听', spec: '500ml', price: 9.00 },
+
+    // Prizes (奖品 & 伴手礼)
+    { id: 'horse-creativity', category: 'Prizes', name: '马年文创礼品', unit: '个', spec: '伴手礼', price: 20.00 },
+    { id: 'cat-blindbox', category: 'Prizes', name: '好运猫猫周边盲盒', unit: '个', spec: '盲盒', price: 12.00 },
+    { id: 'scratch-lottery', category: 'Prizes', name: '刮刮乐彩票', unit: '张', spec: '彩票', price: 20.00 },
+
+    // Major Prizes (Placeholder / Adjustable)
+    { id: 'prize-grand', category: 'Prizes', name: '特等奖 (待定)', unit: '个', spec: '大奖', price: 0 },
+    { id: 'prize-1', category: 'Prizes', name: '一等奖 (待定)', unit: '个', spec: '大奖', price: 0 },
+    { id: 'prize-2', category: 'Prizes', name: '二等奖 (待定)', unit: '个', spec: '大奖', price: 0 },
+    { id: 'prize-3', category: 'Prizes', name: '三等奖 (待定)', unit: '个', spec: '大奖', price: 0 },
+
+    // Red Envelopes (红包)
+    { id: 'red-100', category: 'RedEnvelope', name: '100元红包', unit: '个', spec: '现金', price: 100.00 },
+    { id: 'red-50', category: 'RedEnvelope', name: '50元红包', unit: '个', spec: '现金', price: 50.00 },
+    { id: 'red-20', category: 'RedEnvelope', name: '20元红包', unit: '个', spec: '现金', price: 20.00 },
+    { id: 'red-10', category: 'RedEnvelope', name: '10元红包', unit: '个', spec: '现金', price: 10.00 },
+    { id: 'red-5', category: 'RedEnvelope', name: '5元红包', unit: '个', spec: '现金', price: 5.00 },
 ];
