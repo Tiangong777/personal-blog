@@ -1,6 +1,6 @@
 export interface Drink {
     id: string;
-    category: 'Spirits' | 'Wine' | 'Beer' | 'Prizes' | 'RedEnvelope';
+    category: 'Spirits' | 'Wine' | 'Beer' | 'Prizes' | 'RedEnvelope' | 'Materials';
     name: string;
     unit: string;
     spec: string;
@@ -74,4 +74,8 @@ export const drinks: Drink[] = [
     { id: 'red-20', category: 'RedEnvelope', name: '20元红包', unit: '个', spec: '现金', price: 20.00 },
     { id: 'red-10', category: 'RedEnvelope', name: '10元红包', unit: '个', spec: '现金', price: 10.00 },
     { id: 'red-5', category: 'RedEnvelope', name: '5元红包', unit: '个', spec: '现金', price: 5.00 },
+
+    // Materials (物料费用)
+    { id: 'material-red-envelope-packaging', category: 'Materials', name: '红包包装', unit: '个', spec: '包装', price: 1.00 },
+    { id: 'material-tabletop-football', category: 'Materials', name: '桌面双人足球', unit: '个', spec: '游戏', price: 40.00 },
 ];
