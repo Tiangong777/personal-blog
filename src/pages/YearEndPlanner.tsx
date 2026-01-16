@@ -20,8 +20,21 @@ const YearEndPlanner: React.FC = () => {
     const [floatRatio, setFloatRatio] = useState<number>(() => loadState('floatRatio', 0));
     const [peopleDigitalCenter, setPeopleDigitalCenter] = useState<number>(() => loadState('peopleDigitalCenter', 60));
     const [peopleCommercialVehicle, setPeopleCommercialVehicle] = useState<number>(() => loadState('peopleCommercialVehicle', 59));
-    const [peopleITBP, setPeopleITBP] = useState<number>(() => loadState('peopleITBP', 8));
-    const [itbpSponsorship, setItbpSponsorship] = useState<number>(() => loadState('itbpSponsorship', 0));
+    type ItbpLead = { name: string; people: number; perPerson: number; extra: number };
+    const defaultItbpLeads: ItbpLead[] = [
+        { name: '牛志高', people: 0, perPerson: 0, extra: 0 },
+        { name: '汪亚青', people: 0, perPerson: 0, extra: 0 },
+        { name: '陆旭宴', people: 0, perPerson: 0, extra: 0 },
+        { name: '李昊', people: 0, perPerson: 0, extra: 0 },
+        { name: '左晓海', people: 0, perPerson: 0, extra: 0 },
+        { name: '张主涛', people: 0, perPerson: 0, extra: 0 },
+        { name: '李云峰', people: 0, perPerson: 0, extra: 0 }
+    ];
+    const [itbpLeads, setItbpLeads] = useState<ItbpLead[]>(() => {
+        const stored = loadState<ItbpLead[]>('itbpLeads', defaultItbpLeads);
+        const byName = new Map(stored.map(lead => [lead.name, lead]));
+        return defaultItbpLeads.map(lead => ({ ...lead, ...byName.get(lead.name) }));
+    });
     const [peopleGuests, setPeopleGuests] = useState<number>(() => loadState('peopleGuests', 10));
     const [tableCount, setTableCount] = useState<number>(() => loadState('tableCount', 12));
     const mealPrice = 1000;
@@ -87,8 +100,7 @@ const YearEndPlanner: React.FC = () => {
     useEffect(() => localStorage.setItem('planner_floatRatio', JSON.stringify(floatRatio)), [floatRatio]);
     useEffect(() => localStorage.setItem('planner_peopleDigitalCenter', JSON.stringify(peopleDigitalCenter)), [peopleDigitalCenter]);
     useEffect(() => localStorage.setItem('planner_peopleCommercialVehicle', JSON.stringify(peopleCommercialVehicle)), [peopleCommercialVehicle]);
-    useEffect(() => localStorage.setItem('planner_peopleITBP', JSON.stringify(peopleITBP)), [peopleITBP]);
-    useEffect(() => localStorage.setItem('planner_itbpSponsorship', JSON.stringify(itbpSponsorship)), [itbpSponsorship]);
+    useEffect(() => localStorage.setItem('planner_itbpLeads', JSON.stringify(itbpLeads)), [itbpLeads]);
     useEffect(() => localStorage.setItem('planner_peopleGuests', JSON.stringify(peopleGuests)), [peopleGuests]);
     useEffect(() => localStorage.setItem('planner_tableCount', JSON.stringify(tableCount)), [tableCount]);
     useEffect(() => localStorage.setItem('planner_cart', JSON.stringify(cart)), [cart]);
@@ -98,14 +110,27 @@ const YearEndPlanner: React.FC = () => {
 
     // Calculations
     const mealCost = useMemo(() => tableCount * mealPrice, [tableCount, mealPrice]);
-    const totalPeople = peopleDigitalCenter + peopleCommercialVehicle + peopleITBP + peopleGuests;
+    const itbpTotals = useMemo(() => {
+        return itbpLeads.reduce(
+            (acc, lead) => {
+                const people = Math.max(0, Number(lead.people) || 0);
+                const perPerson = Math.max(0, Number(lead.perPerson) || 0);
+                const extra = Math.max(0, Number(lead.extra) || 0);
+                acc.people += people;
+                acc.sponsorship += people * perPerson + extra;
+                return acc;
+            },
+            { people: 0, sponsorship: 0 }
+        );
+    }, [itbpLeads]);
+    const totalPeople = peopleDigitalCenter + peopleCommercialVehicle + itbpTotals.people + peopleGuests;
 
     // Effective budget with float + sponsorship
     const effectiveBudget = useMemo(() => {
         const base = budget * (1 + floatRatio / 100);
-        const sponsorship = peopleITBP * itbpSponsorship;
+        const sponsorship = itbpTotals.sponsorship;
         return base + sponsorship;
-    }, [budget, floatRatio, peopleITBP, itbpSponsorship]);
+    }, [budget, floatRatio, itbpTotals.sponsorship]);
 
     const perCapitaBudget = useMemo(() => totalPeople > 0 ? effectiveBudget / totalPeople : 0, [effectiveBudget, totalPeople]);
 
@@ -343,39 +368,54 @@ const YearEndPlanner: React.FC = () => {
 
                                 <div className="col-span-2 space-y-2 bg-white/5 p-3 rounded-xl border border-white/5">
                                     <label className="text-sm text-text-dim flex items-center gap-2">
-                                        <Users size={14} /> ITBP带队人数&人均赞助
+                                        <Users size={14} /> ITBP带队明细&赞助
                                     </label>
-                                    <div className="flex gap-3">
-                                        <div className="flex-1 space-y-1">
-                                            <span className="text-xs text-text-dim">人数</span>
-                                            <input
-                                                type="number"
-                                                value={peopleITBP}
-                                                onChange={(e) => setPeopleITBP(Math.max(0, Number(e.target.value)))}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 font-mono focus:border-accent-blue/50 outline-none transition-all"
-                                                placeholder="人数"
-                                            />
-                                        </div>
-                                        <div className="flex-1 space-y-1">
-                                            <span className="text-xs text-text-dim">人均赞助</span>
-                                            <div className="relative">
+                                    <div className="grid grid-cols-4 gap-2 text-xs text-text-dim px-1">
+                                        <span>姓名</span>
+                                        <span>带人数</span>
+                                        <span>人均赞助</span>
+                                        <span>额外赞助</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {itbpLeads.map((lead, index) => (
+                                            <div key={lead.name} className="grid grid-cols-4 gap-2 items-center">
+                                                <span className="text-sm text-text-main truncate">{lead.name}</span>
                                                 <input
                                                     type="number"
-                                                    value={itbpSponsorship}
-                                                    onChange={(e) => setItbpSponsorship(Math.max(0, Number(e.target.value)))}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-6 pr-2 py-2 font-mono focus:border-accent-blue/50 outline-none transition-all"
+                                                    value={lead.people}
+                                                    onChange={(e) => setItbpLeads(prev => prev.map((item, i) => i === index ? { ...item, people: Math.max(0, Number(e.target.value)) } : item))}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1 font-mono text-sm focus:border-accent-blue/50 outline-none transition-all"
                                                     placeholder="0"
                                                 />
-                                                <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-dim text-xs">¥</span>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        value={lead.perPerson}
+                                                        onChange={(e) => setItbpLeads(prev => prev.map((item, i) => i === index ? { ...item, perPerson: Math.max(0, Number(e.target.value)) } : item))}
+                                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-5 pr-2 py-1 font-mono text-sm focus:border-accent-blue/50 outline-none transition-all"
+                                                        placeholder="0"
+                                                    />
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-dim text-xs">¥</span>
+                                                </div>
+                                                <div className="relative">
+                                                    <input
+                                                        type="number"
+                                                        value={lead.extra}
+                                                        onChange={(e) => setItbpLeads(prev => prev.map((item, i) => i === index ? { ...item, extra: Math.max(0, Number(e.target.value)) } : item))}
+                                                        className="w-full bg-white/5 border border-white/10 rounded-lg pl-5 pr-2 py-1 font-mono text-sm focus:border-accent-blue/50 outline-none transition-all"
+                                                        placeholder="0"
+                                                    />
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-dim text-xs">¥</span>
+                                                </div>
                                             </div>
-                                        </div>
+                                        ))}
                                     </div>
-                                    {itbpSponsorship > 0 && (
-                                        <div className="flex justify-between items-center text-xs pt-1">
-                                            <span className="text-text-dim">赞助小计:</span>
-                                            <span className="font-mono text-accent-blue font-bold">+ {formatCurrency(peopleITBP * itbpSponsorship)}</span>
-                                        </div>
-                                    )}
+                                    <div className="flex justify-between items-center text-xs pt-1">
+                                        <span className="text-text-dim">ITBP合计:</span>
+                                        <span className="font-mono text-accent-blue font-bold">
+                                            {itbpTotals.people} 人 / + {formatCurrency(itbpTotals.sponsorship)}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="col-span-2 space-y-2">
