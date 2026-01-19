@@ -86,8 +86,18 @@ const YearEndPlanner: React.FC = () => {
     const [newPrizePrice, setNewPrizePrice] = useState('');
     const [newPrizeSpec, setNewPrizeSpec] = useState('');
     const [newPrizeUnit, setNewPrizeUnit] = useState('');
-    const [editingPrizeId, setEditingPrizeId] = useState<string | null>(null);
-    const [editingPrizeDraft, setEditingPrizeDraft] = useState({
+    // Custom red envelopes and edits
+    const [customRedEnvelopes, setCustomRedEnvelopes] = useState<Drink[]>(() => loadState('customRedEnvelopes', []));
+    const [redEnvelopeEdits, setRedEnvelopeEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('redEnvelopeEdits', {}));
+    const [showAddRedEnvelope, setShowAddRedEnvelope] = useState(false);
+    const [newRedEnvelopeName, setNewRedEnvelopeName] = useState('');
+    const [newRedEnvelopePrice, setNewRedEnvelopePrice] = useState('');
+    const [newRedEnvelopeSpec, setNewRedEnvelopeSpec] = useState('');
+    const [newRedEnvelopeUnit, setNewRedEnvelopeUnit] = useState('');
+    // Shared editing state for prizes/red envelopes
+    const [editingRewardId, setEditingRewardId] = useState<string | null>(null);
+    const [editingRewardCategory, setEditingRewardCategory] = useState<Drink['category'] | null>(null);
+    const [editingRewardDraft, setEditingRewardDraft] = useState({
         name: '',
         spec: '',
         unit: '',
@@ -107,6 +117,8 @@ const YearEndPlanner: React.FC = () => {
     useEffect(() => localStorage.setItem('planner_customMaterials', JSON.stringify(customMaterials)), [customMaterials]);
     useEffect(() => localStorage.setItem('planner_customPrizes', JSON.stringify(customPrizes)), [customPrizes]);
     useEffect(() => localStorage.setItem('planner_prizeEdits', JSON.stringify(prizeEdits)), [prizeEdits]);
+    useEffect(() => localStorage.setItem('planner_customRedEnvelopes', JSON.stringify(customRedEnvelopes)), [customRedEnvelopes]);
+    useEffect(() => localStorage.setItem('planner_redEnvelopeEdits', JSON.stringify(redEnvelopeEdits)), [redEnvelopeEdits]);
 
     // Calculations
     const mealCost = useMemo(() => tableCount * mealPrice, [tableCount, mealPrice]);
@@ -137,12 +149,16 @@ const YearEndPlanner: React.FC = () => {
     // Merge default drinks with edits + custom items
     const allItems = useMemo(() => {
         const updated = drinks.map(item => {
-            if (item.category !== 'Prizes') return item;
-            const override = prizeEdits[item.id];
+            const override =
+                item.category === 'Prizes'
+                    ? prizeEdits[item.id]
+                    : item.category === 'RedEnvelope'
+                        ? redEnvelopeEdits[item.id]
+                        : undefined;
             return override ? { ...item, ...override } : item;
         });
-        return [...updated, ...customPrizes, ...customMaterials];
-    }, [customMaterials, customPrizes, prizeEdits]);
+        return [...updated, ...customPrizes, ...customRedEnvelopes, ...customMaterials];
+    }, [customMaterials, customPrizes, customRedEnvelopes, prizeEdits, redEnvelopeEdits]);
 
     const { drinksOnlyCost, prizesCost, materialsCost } = useMemo(() => {
         let dCost = 0;
@@ -199,6 +215,28 @@ const YearEndPlanner: React.FC = () => {
         setShowAddMaterial(false);
     };
 
+    const handleAddCustomRedEnvelope = () => {
+        if (!newRedEnvelopeName.trim() || !newRedEnvelopePrice) return;
+        const price = parseFloat(newRedEnvelopePrice);
+        if (isNaN(price) || price <= 0) return;
+
+        const newEnvelope: Drink = {
+            id: `custom-red-envelope-${Date.now()}`,
+            category: 'RedEnvelope',
+            name: newRedEnvelopeName.trim(),
+            unit: newRedEnvelopeUnit.trim() || '个',
+            spec: newRedEnvelopeSpec.trim() || '现金',
+            price
+        };
+
+        setCustomRedEnvelopes(prev => [...prev, newEnvelope]);
+        setNewRedEnvelopeName('');
+        setNewRedEnvelopePrice('');
+        setNewRedEnvelopeSpec('');
+        setNewRedEnvelopeUnit('');
+        setShowAddRedEnvelope(false);
+    };
+
     const handleAddCustomPrize = () => {
         if (!newPrizeName.trim() || !newPrizePrice) return;
         const price = parseFloat(newPrizePrice);
@@ -230,6 +268,14 @@ const YearEndPlanner: React.FC = () => {
         });
     };
 
+    const handleRemoveCustomRedEnvelope = (id: string) => {
+        setCustomRedEnvelopes(prev => prev.filter(p => p.id !== id));
+        setCart(prev => {
+            const { [id]: _, ...rest } = prev;
+            return rest;
+        });
+    };
+
     const handleRemoveCustomPrize = (id: string) => {
         setCustomPrizes(prev => prev.filter(p => p.id !== id));
         // Also remove from cart if exists
@@ -239,9 +285,10 @@ const YearEndPlanner: React.FC = () => {
         });
     };
 
-    const handleStartEditPrize = (item: Drink) => {
-        setEditingPrizeId(item.id);
-        setEditingPrizeDraft({
+    const handleStartEditReward = (item: Drink) => {
+        setEditingRewardId(item.id);
+        setEditingRewardCategory(item.category);
+        setEditingRewardDraft({
             name: item.name,
             spec: item.spec,
             unit: item.unit,
@@ -250,29 +297,41 @@ const YearEndPlanner: React.FC = () => {
         });
     };
 
-    const handleCancelEditPrize = () => {
-        setEditingPrizeId(null);
+    const handleCancelEditReward = () => {
+        setEditingRewardId(null);
+        setEditingRewardCategory(null);
     };
 
-    const handleSaveEditPrize = (id: string) => {
-        const name = editingPrizeDraft.name.trim();
+    const handleSaveEditReward = (id: string) => {
+        if (!editingRewardCategory) return;
+        const name = editingRewardDraft.name.trim();
         if (!name) return;
-        const price = Number(editingPrizeDraft.price);
+        const price = Number(editingRewardDraft.price);
         if (isNaN(price) || price < 0) return;
-        const qty = Math.max(0, Math.floor(Number(editingPrizeDraft.qty)));
+        const qty = Math.max(0, Math.floor(Number(editingRewardDraft.qty)));
         if (isNaN(qty)) return;
 
         const updatedFields = {
             name,
-            spec: editingPrizeDraft.spec.trim() || '?',
-            unit: editingPrizeDraft.unit.trim() || '?',
+            spec: editingRewardDraft.spec.trim() || '?',
+            unit: editingRewardDraft.unit.trim() || '?',
             price
         };
 
-        if (id.startsWith('custom-prize-')) {
-            setCustomPrizes(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
-        } else {
-            setPrizeEdits(prev => ({ ...prev, [id]: updatedFields }));
+        if (editingRewardCategory === 'Prizes') {
+            if (id.startsWith('custom-prize-')) {
+                setCustomPrizes(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
+            } else {
+                setPrizeEdits(prev => ({ ...prev, [id]: updatedFields }));
+            }
+        }
+
+        if (editingRewardCategory === 'RedEnvelope') {
+            if (id.startsWith('custom-red-envelope-')) {
+                setCustomRedEnvelopes(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
+            } else {
+                setRedEnvelopeEdits(prev => ({ ...prev, [id]: updatedFields }));
+            }
         }
         setCart(prev => {
             if (qty === 0) {
@@ -281,7 +340,8 @@ const YearEndPlanner: React.FC = () => {
             }
             return { ...prev, [id]: qty };
         });
-        setEditingPrizeId(null);
+        setEditingRewardId(null);
+        setEditingRewardCategory(null);
     };
 
     const formatCurrency = (val: number) => new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(val);
@@ -799,14 +859,114 @@ const YearEndPlanner: React.FC = () => {
                             </AnimatePresence>
                         )}
 
+                        {/* Add Red Envelope Button - Only show for RedEnvelope tab */}
+                        {activeTab === 'RedEnvelope' && (
+                            <AnimatePresence>
+                                {!showAddRedEnvelope ? (
+                                    <motion.button
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        onClick={() => setShowAddRedEnvelope(true)}
+                                        className="w-full glass p-4 rounded-2xl border-2 border-dashed border-white/20 hover:border-accent-blue/50 transition-all flex items-center justify-center gap-2 text-text-dim hover:text-accent-blue"
+                                    >
+                                        <Plus size={20} />
+                                        <span className="font-medium">新增现金红包</span>
+                                    </motion.button>
+                                ) : (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="glass p-4 rounded-2xl border-accent-blue/30"
+                                    >
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h3 className="font-bold text-text-main">自定义红包</h3>
+                                            <button
+                                                onClick={() => {
+                                                    setShowAddRedEnvelope(false);
+                                                    setNewRedEnvelopeName('');
+                                                    setNewRedEnvelopePrice('');
+                                                    setNewRedEnvelopeSpec('');
+                                                    setNewRedEnvelopeUnit('');
+                                                }}
+                                                className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+                                            >
+                                                <X size={18} className="text-text-dim" />
+                                            </button>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-text-dim mb-1 block">红包名称</label>
+                                                    <input
+                                                        type="text"
+                                                        value={newRedEnvelopeName}
+                                                        onChange={(e) => setNewRedEnvelopeName(e.target.value)}
+                                                        placeholder="例:188元红包"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:border-accent-blue/50 outline-none transition-all"
+                                                        onKeyDown={(e) => e.key === 'Enter' && handleAddCustomRedEnvelope()}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-text-dim mb-1 block">金额 (元)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={newRedEnvelopePrice}
+                                                        onChange={(e) => setNewRedEnvelopePrice(e.target.value)}
+                                                        placeholder="例:188"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm font-mono focus:border-accent-blue/50 outline-none transition-all"
+                                                        onKeyDown={(e) => e.key === 'Enter' && handleAddCustomRedEnvelope()}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-text-dim mb-1 block">规格</label>
+                                                    <input
+                                                        type="text"
+                                                        value={newRedEnvelopeSpec}
+                                                        onChange={(e) => setNewRedEnvelopeSpec(e.target.value)}
+                                                        placeholder="例:现金"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:border-accent-blue/50 outline-none transition-all"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-text-dim mb-1 block">单位</label>
+                                                    <input
+                                                        type="text"
+                                                        value={newRedEnvelopeUnit}
+                                                        onChange={(e) => setNewRedEnvelopeUnit(e.target.value)}
+                                                        placeholder="例:个"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:border-accent-blue/50 outline-none transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={handleAddCustomRedEnvelope}
+                                                disabled={!newRedEnvelopeName.trim() || !newRedEnvelopePrice}
+                                                className="w-full bg-accent-blue hover:bg-accent-blue/90 disabled:bg-white/10 disabled:text-text-dim text-black font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <Check size={16} />
+                                                添加红包
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        )}
+
                         {/* Items Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <AnimatePresence mode='popLayout'>
                                 {allItems.filter(d => d.category === activeTab).map((drink) => {
                                     const isCustomMaterial = drink.id.startsWith('custom-material-');
                                     const isCustomPrize = drink.id.startsWith('custom-prize-');
+                                    const isCustomRedEnvelope = drink.id.startsWith('custom-red-envelope-');
                                     const isPrize = drink.category === 'Prizes';
-                                    const isEditingPrize = isPrize && editingPrizeId === drink.id;
+                                    const isRedEnvelope = drink.category === 'RedEnvelope';
+                                    const isEditableReward = isPrize || isRedEnvelope;
+                                    const isEditingReward = isEditableReward && editingRewardId === drink.id;
                                     return (
                                         <motion.div
                                             key={drink.id}
@@ -819,11 +979,11 @@ const YearEndPlanner: React.FC = () => {
                                         >
                                             <div className="flex-1 min-w-0 mr-4">
                                                 <div className="flex items-center gap-2">
-                                                    {isEditingPrize ? (
+                                                    {isEditingReward ? (
                                                         <input
                                                             type="text"
-                                                            value={editingPrizeDraft.name}
-                                                            onChange={(e) => setEditingPrizeDraft(prev => ({ ...prev, name: e.target.value }))}
+                                                            value={editingRewardDraft.name}
+                                                            onChange={(e) => setEditingRewardDraft(prev => ({ ...prev, name: e.target.value }))}
                                                             className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-sm focus:border-accent-blue/50 outline-none transition-all"
                                                         />
                                                     ) : (
@@ -849,43 +1009,52 @@ const YearEndPlanner: React.FC = () => {
                                                             <Trash2 size={14} className="text-red-400" />
                                                         </button>
                                                     )}
-                                                    {isPrize && !isEditingPrize && (
+                                                    {isCustomRedEnvelope && (
                                                         <button
-                                                            onClick={() => handleStartEditPrize(drink)}
+                                                            onClick={() => handleRemoveCustomRedEnvelope(drink.id)}
+                                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition-all"
+                                                            title="删除自定义红包"
+                                                        >
+                                                            <Trash2 size={14} className="text-red-400" />
+                                                        </button>
+                                                    )}
+                                                    {isEditableReward && !isEditingReward && (
+                                                        <button
+                                                            onClick={() => handleStartEditReward(drink)}
                                                             className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all"
-                                                            title="编辑奖品"
+                                                            title="????"
                                                         >
                                                             <Pencil size={14} className="text-text-dim" />
                                                         </button>
                                                     )}
                                                 </div>
-                                                {isEditingPrize ? (
+                                                {isEditingReward ? (
                                                     <div className="grid grid-cols-5 gap-2 mt-2">
                                                         <input
                                                             type="text"
-                                                            value={editingPrizeDraft.spec}
-                                                            onChange={(e) => setEditingPrizeDraft(prev => ({ ...prev, spec: e.target.value }))}
+                                                            value={editingRewardDraft.spec}
+                                                            onChange={(e) => setEditingRewardDraft(prev => ({ ...prev, spec: e.target.value }))}
                                                             className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs focus:border-accent-blue/50 outline-none transition-all"
                                                             placeholder="规格"
                                                         />
                                                         <input
                                                             type="text"
-                                                            value={editingPrizeDraft.unit}
-                                                            onChange={(e) => setEditingPrizeDraft(prev => ({ ...prev, unit: e.target.value }))}
+                                                            value={editingRewardDraft.unit}
+                                                            onChange={(e) => setEditingRewardDraft(prev => ({ ...prev, unit: e.target.value }))}
                                                             className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs focus:border-accent-blue/50 outline-none transition-all"
                                                             placeholder="单位"
                                                         />
                                                         <input
                                                             type="number"
-                                                            value={editingPrizeDraft.price}
-                                                            onChange={(e) => setEditingPrizeDraft(prev => ({ ...prev, price: Number(e.target.value) }))}
+                                                            value={editingRewardDraft.price}
+                                                            onChange={(e) => setEditingRewardDraft(prev => ({ ...prev, price: Number(e.target.value) }))}
                                                             className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs font-mono focus:border-accent-blue/50 outline-none transition-all"
                                                             placeholder="单价"
                                                         />
                                                         <input
                                                             type="number"
-                                                            value={editingPrizeDraft.qty}
-                                                            onChange={(e) => setEditingPrizeDraft(prev => ({ ...prev, qty: Number(e.target.value) }))}
+                                                            value={editingRewardDraft.qty}
+                                                            onChange={(e) => setEditingRewardDraft(prev => ({ ...prev, qty: Number(e.target.value) }))}
                                                             className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs font-mono focus:border-accent-blue/50 outline-none transition-all"
                                                             placeholder="数量"
                                                             min={0}
@@ -893,15 +1062,15 @@ const YearEndPlanner: React.FC = () => {
                                                         />
                                                         <div className="flex items-center gap-1">
                                                             <button
-                                                                onClick={() => handleSaveEditPrize(drink.id)}
+                                                                onClick={() => handleSaveEditReward(drink.id)}
                                                                 className="p-1.5 rounded-lg bg-accent-blue text-black hover:bg-accent-blue/90 transition-colors"
                                                                 title="保存"
-                                                                disabled={!editingPrizeDraft.name.trim()}
+                                                                disabled={!editingRewardDraft.name.trim()}
                                                             >
                                                                 <Check size={12} />
                                                             </button>
                                                             <button
-                                                                onClick={handleCancelEditPrize}
+                                                                onClick={handleCancelEditReward}
                                                                 className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
                                                                 title="取消"
                                                             >
