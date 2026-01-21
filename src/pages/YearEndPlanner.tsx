@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calculator, Users, DollarSign, Plus, Minus, X, Check, Trash2, Pencil } from 'lucide-react';
 import { drinks, type Drink } from '../data/drinks';
+import { sharedConfig, type PlannerConfig } from '../data/plannerConfig';
+import { Download, RefreshCw } from 'lucide-react';
 
 const YearEndPlanner: React.FC = () => {
     // Helper to load from local storage
@@ -16,10 +18,10 @@ const YearEndPlanner: React.FC = () => {
     };
 
     // Inputs
-    const [budget, setBudget] = useState<number>(() => loadState('budget', 27345));
-    const [floatRatio, setFloatRatio] = useState<number>(() => loadState('floatRatio', 0));
-    const [peopleDigitalCenter, setPeopleDigitalCenter] = useState<number>(() => loadState('peopleDigitalCenter', 60));
-    const [peopleCommercialVehicle, setPeopleCommercialVehicle] = useState<number>(() => loadState('peopleCommercialVehicle', 59));
+    const [budget, setBudget] = useState<number>(() => loadState('budget', sharedConfig.budget ?? 27345));
+    const [floatRatio, setFloatRatio] = useState<number>(() => loadState('floatRatio', sharedConfig.floatRatio ?? 0));
+    const [peopleDigitalCenter, setPeopleDigitalCenter] = useState<number>(() => loadState('peopleDigitalCenter', sharedConfig.peopleDigitalCenter ?? 60));
+    const [peopleCommercialVehicle, setPeopleCommercialVehicle] = useState<number>(() => loadState('peopleCommercialVehicle', sharedConfig.peopleCommercialVehicle ?? 59));
     type ItbpLead = { name: string; people: number; perPerson: number; extra: number };
     const defaultItbpLeads: ItbpLead[] = [
         { name: '牛志高', people: 0, perPerson: 0, extra: 0 },
@@ -31,12 +33,12 @@ const YearEndPlanner: React.FC = () => {
         { name: '李云峰', people: 0, perPerson: 0, extra: 0 }
     ];
     const [itbpLeads, setItbpLeads] = useState<ItbpLead[]>(() => {
-        const stored = loadState<ItbpLead[]>('itbpLeads', defaultItbpLeads);
+        const stored = loadState<ItbpLead[]>('itbpLeads', sharedConfig.itbpLeads ?? defaultItbpLeads);
         const byName = new Map(stored.map(lead => [lead.name, lead]));
         return defaultItbpLeads.map(lead => ({ ...lead, ...byName.get(lead.name) }));
     });
-    const [peopleGuests, setPeopleGuests] = useState<number>(() => loadState('peopleGuests', 10));
-    const [tableCount, setTableCount] = useState<number>(() => loadState('tableCount', 12));
+    const [peopleGuests, setPeopleGuests] = useState<number>(() => loadState('peopleGuests', sharedConfig.peopleGuests ?? 10));
+    const [tableCount, setTableCount] = useState<number>(() => loadState('tableCount', sharedConfig.tableCount ?? 12));
     const mealPrice = 1000;
     const [activeTab, setActiveTab] = useState<Drink['category']>('Spirits');
 
@@ -71,24 +73,24 @@ const YearEndPlanner: React.FC = () => {
     ];
 
     // Cart: { drinkId: quantity }
-    const [cart, setCart] = useState<Record<string, number>>(() => loadState('cart', {}));
+    const [cart, setCart] = useState<Record<string, number>>(() => loadState('cart', sharedConfig.cart ?? {}));
 
     // Custom materials
-    const [customMaterials, setCustomMaterials] = useState<Drink[]>(() => loadState('customMaterials', []));
+    const [customMaterials, setCustomMaterials] = useState<Drink[]>(() => loadState('customMaterials', sharedConfig.customMaterials ?? []));
     const [showAddMaterial, setShowAddMaterial] = useState(false);
     const [newMaterialName, setNewMaterialName] = useState('');
     const [newMaterialPrice, setNewMaterialPrice] = useState('');
     // Custom prizes and edits
-    const [customPrizes, setCustomPrizes] = useState<Drink[]>(() => loadState('customPrizes', []));
-    const [prizeEdits, setPrizeEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('prizeEdits', {}));
+    const [customPrizes, setCustomPrizes] = useState<Drink[]>(() => loadState('customPrizes', sharedConfig.customPrizes ?? []));
+    const [prizeEdits, setPrizeEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('prizeEdits', sharedConfig.prizeEdits ?? {}));
     const [showAddPrize, setShowAddPrize] = useState(false);
     const [newPrizeName, setNewPrizeName] = useState('');
     const [newPrizePrice, setNewPrizePrice] = useState('');
     const [newPrizeSpec, setNewPrizeSpec] = useState('');
     const [newPrizeUnit, setNewPrizeUnit] = useState('');
     // Custom red envelopes and edits
-    const [customRedEnvelopes, setCustomRedEnvelopes] = useState<Drink[]>(() => loadState('customRedEnvelopes', []));
-    const [redEnvelopeEdits, setRedEnvelopeEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('redEnvelopeEdits', {}));
+    const [customRedEnvelopes, setCustomRedEnvelopes] = useState<Drink[]>(() => loadState('customRedEnvelopes', sharedConfig.customRedEnvelopes ?? []));
+    const [redEnvelopeEdits, setRedEnvelopeEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('redEnvelopeEdits', sharedConfig.redEnvelopeEdits ?? {}));
     const [showAddRedEnvelope, setShowAddRedEnvelope] = useState(false);
     const [newRedEnvelopeName, setNewRedEnvelopeName] = useState('');
     const [newRedEnvelopePrice, setNewRedEnvelopePrice] = useState('');
@@ -344,15 +346,76 @@ const YearEndPlanner: React.FC = () => {
         setEditingRewardCategory(null);
     };
 
+    const handleExportConfig = () => {
+        const config: PlannerConfig = {
+            budget,
+            floatRatio,
+            peopleDigitalCenter,
+            peopleCommercialVehicle,
+            itbpLeads,
+            peopleGuests,
+            tableCount,
+            cart,
+            customMaterials,
+            customPrizes,
+            prizeEdits,
+            customRedEnvelopes,
+            redEnvelopeEdits
+        };
+        const blob = new Blob([JSON.stringify(config, null, 4)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'planner_config.json';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        // Also log to console for easy copying
+        console.log('--- Planner Configuration ---');
+        console.log(JSON.stringify(config, null, 4));
+        alert('配置已生成！\n1. 请将下载的 planner_config.json 文件内容发给我。\n2. 或者从控制台打印的结果中复制发给我。');
+    };
+
+    const handleClearLocalCache = () => {
+        if (confirm('确定要清除本地缓存并恢复默认配置吗？')) {
+            const keys = [
+                'budget', 'floatRatio', 'peopleDigitalCenter', 'peopleCommercialVehicle',
+                'itbpLeads', 'peopleGuests', 'tableCount', 'cart',
+                'customMaterials', 'customPrizes', 'prizeEdits',
+                'customRedEnvelopes', 'redEnvelopeEdits'
+            ];
+            keys.forEach(key => localStorage.removeItem(`planner_${key}`));
+            window.location.reload();
+        }
+    };
+
     const formatCurrency = (val: number) => new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(val);
 
     return (
         <div className="container py-8 max-w-7xl mx-auto">
-            <header className="mb-12 text-center">
+            <header className="mb-12 text-center relative">
                 <h1 className="text-4xl md:text-5xl font-outfit font-bold mb-4 text-gradient">年会筹备</h1>
                 <div className="text-text-dim text-sm md:text-base space-y-1">
                     <div>年会时间: 2月6日 下午六点开始</div>
                     <div>地点: 龙山露营地 途居厅</div>
+                </div>
+
+                {/* Developer Tools */}
+                <div className="absolute top-0 right-0 flex gap-2">
+                    <button
+                        onClick={handleExportConfig}
+                        className="p-2 glass rounded-xl text-text-dim hover:text-accent-blue transition-all"
+                        title="导出配置"
+                    >
+                        <Download size={18} />
+                    </button>
+                    <button
+                        onClick={handleClearLocalCache}
+                        className="p-2 glass rounded-xl text-text-dim hover:text-red-400 transition-all"
+                        title="清除缓存并恢复默认"
+                    >
+                        <RefreshCw size={18} />
+                    </button>
                 </div>
             </header>
 
