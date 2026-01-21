@@ -1,22 +1,4 @@
-import type { Drink } from './drinks';
-
-export interface PlannerConfig {
-    budget: number;
-    floatRatio: number;
-    peopleDigitalCenter: number;
-    peopleCommercialVehicle: number;
-    itbpLeads: { name: string; people: number; perPerson: number; extra: number }[];
-    peopleGuests: number;
-    tableCount: number;
-    cart: Record<string, number>;
-    customMaterials: Drink[];
-    customPrizes: Drink[];
-    prizeEdits: Record<string, Partial<Drink>>;
-    customRedEnvelopes: Drink[];
-    redEnvelopeEdits: Record<string, Partial<Drink>>;
-}
-
-export const sharedConfig: Partial<PlannerConfig> = {
+{
     "budget": 27865,
     "floatRatio": 0,
     "peopleDigitalCenter": 68,
@@ -171,4 +153,4 @@ export const sharedConfig: Partial<PlannerConfig> = {
         }
     ],
     "redEnvelopeEdits": {}
-};
+}
