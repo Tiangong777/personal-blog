@@ -17,6 +17,11 @@ const YearEndPlanner: React.FC = () => {
         }
     };
 
+    // Generic Config
+    const [title, setTitle] = useState<string>(() => loadState('title', sharedConfig.title ?? '年会筹备'));
+    const [timeStr, setTimeStr] = useState<string>(() => loadState('timeStr', sharedConfig.time ?? '2月6日 下午六点开始'));
+    const [location, setLocation] = useState<string>(() => loadState('location', sharedConfig.location ?? '龙山露营地 途居厅'));
+
     // Inputs
     const [budget, setBudget] = useState<number>(() => loadState('budget', sharedConfig.budget ?? 27345));
     const [floatRatio, setFloatRatio] = useState<number>(() => loadState('floatRatio', sharedConfig.floatRatio ?? 0));
@@ -34,15 +39,16 @@ const YearEndPlanner: React.FC = () => {
     ];
     const [itbpLeads, setItbpLeads] = useState<ItbpLead[]>(() => {
         const stored = loadState<ItbpLead[]>('itbpLeads', sharedConfig.itbpLeads ?? defaultItbpLeads);
-        const byName = new Map(stored.map(lead => [lead.name, lead]));
-        return defaultItbpLeads.map(lead => ({ ...lead, ...byName.get(lead.name) }));
+        // If sharedConfig provides leads, we use them as is (user said "everyone from config")
+        // No merging with hardcoded list unless no leads provided
+        return sharedConfig.itbpLeads ?? stored;
     });
     const [peopleGuests, setPeopleGuests] = useState<number>(() => loadState('peopleGuests', sharedConfig.peopleGuests ?? 10));
     const [tableCount, setTableCount] = useState<number>(() => loadState('tableCount', sharedConfig.tableCount ?? 12));
-    const mealPrice = 1000;
+    const [mealPrice, setMealPrice] = useState<number>(() => loadState('mealPrice', sharedConfig.mealPrice ?? 1000));
     const [activeTab, setActiveTab] = useState<Drink['category']>('Spirits');
 
-    const dinnerMenu = [
+    const [dinnerMenu, setDinnerMenu] = useState<{ title: string; items: string[] }[]>(() => loadState('dinnerMenu', sharedConfig.dinnerMenu ?? [
         {
             title: '冷菜',
             items: ['精美四冷']
@@ -70,7 +76,7 @@ const YearEndPlanner: React.FC = () => {
             title: '甜品',
             items: ['红糖糍粑', '精美果盘', '饮料2瓶']
         }
-    ];
+    ]));
 
     // Cart: { drinkId: quantity }
     const [cart, setCart] = useState<Record<string, number>>(() => loadState('cart', sharedConfig.cart ?? {}));
@@ -96,7 +102,10 @@ const YearEndPlanner: React.FC = () => {
     const [newRedEnvelopePrice, setNewRedEnvelopePrice] = useState('');
     const [newRedEnvelopeSpec, setNewRedEnvelopeSpec] = useState('');
     const [newRedEnvelopeUnit, setNewRedEnvelopeUnit] = useState('');
-    // Shared editing state for prizes/red envelopes
+    // Other edits (Beer, Wine, Spirits, Materials)
+    const [itemEdits, setItemEdits] = useState<Record<string, Partial<Drink>>>(() => loadState('itemEdits', sharedConfig.itemEdits ?? {}));
+
+    // Shared editing state for ALL categories
     const [editingRewardId, setEditingRewardId] = useState<string | null>(null);
     const [editingRewardCategory, setEditingRewardCategory] = useState<Drink['category'] | null>(null);
     const [editingRewardDraft, setEditingRewardDraft] = useState({
@@ -108,6 +117,9 @@ const YearEndPlanner: React.FC = () => {
     });
 
     // Persistence Effects
+    useEffect(() => localStorage.setItem('planner_title', JSON.stringify(title)), [title]);
+    useEffect(() => localStorage.setItem('planner_timeStr', JSON.stringify(timeStr)), [timeStr]);
+    useEffect(() => localStorage.setItem('planner_location', JSON.stringify(location)), [location]);
     useEffect(() => localStorage.setItem('planner_budget', JSON.stringify(budget)), [budget]);
     useEffect(() => localStorage.setItem('planner_floatRatio', JSON.stringify(floatRatio)), [floatRatio]);
     useEffect(() => localStorage.setItem('planner_peopleDigitalCenter', JSON.stringify(peopleDigitalCenter)), [peopleDigitalCenter]);
@@ -115,12 +127,15 @@ const YearEndPlanner: React.FC = () => {
     useEffect(() => localStorage.setItem('planner_itbpLeads', JSON.stringify(itbpLeads)), [itbpLeads]);
     useEffect(() => localStorage.setItem('planner_peopleGuests', JSON.stringify(peopleGuests)), [peopleGuests]);
     useEffect(() => localStorage.setItem('planner_tableCount', JSON.stringify(tableCount)), [tableCount]);
+    useEffect(() => localStorage.setItem('planner_mealPrice', JSON.stringify(mealPrice)), [mealPrice]);
+    useEffect(() => localStorage.setItem('planner_dinnerMenu', JSON.stringify(dinnerMenu)), [dinnerMenu]);
     useEffect(() => localStorage.setItem('planner_cart', JSON.stringify(cart)), [cart]);
     useEffect(() => localStorage.setItem('planner_customMaterials', JSON.stringify(customMaterials)), [customMaterials]);
     useEffect(() => localStorage.setItem('planner_customPrizes', JSON.stringify(customPrizes)), [customPrizes]);
     useEffect(() => localStorage.setItem('planner_prizeEdits', JSON.stringify(prizeEdits)), [prizeEdits]);
     useEffect(() => localStorage.setItem('planner_customRedEnvelopes', JSON.stringify(customRedEnvelopes)), [customRedEnvelopes]);
     useEffect(() => localStorage.setItem('planner_redEnvelopeEdits', JSON.stringify(redEnvelopeEdits)), [redEnvelopeEdits]);
+    useEffect(() => localStorage.setItem('planner_itemEdits', JSON.stringify(itemEdits)), [itemEdits]);
 
     // Calculations
     const mealCost = useMemo(() => tableCount * mealPrice, [tableCount, mealPrice]);
@@ -156,11 +171,11 @@ const YearEndPlanner: React.FC = () => {
                     ? prizeEdits[item.id]
                     : item.category === 'RedEnvelope'
                         ? redEnvelopeEdits[item.id]
-                        : undefined;
+                        : itemEdits[item.id];
             return override ? { ...item, ...override } : item;
         });
         return [...updated, ...customPrizes, ...customRedEnvelopes, ...customMaterials];
-    }, [customMaterials, customPrizes, customRedEnvelopes, prizeEdits, redEnvelopeEdits]);
+    }, [customMaterials, customPrizes, customRedEnvelopes, prizeEdits, redEnvelopeEdits, itemEdits]);
 
     const { drinksOnlyCost, prizesCost, materialsCost } = useMemo(() => {
         let dCost = 0;
@@ -335,6 +350,15 @@ const YearEndPlanner: React.FC = () => {
                 setRedEnvelopeEdits(prev => ({ ...prev, [id]: updatedFields }));
             }
         }
+
+        if (['Spirits', 'Wine', 'Beer', 'Materials'].includes(editingRewardCategory!)) {
+            if (id.startsWith('custom-material-')) {
+                setCustomMaterials(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
+            } else {
+                setItemEdits(prev => ({ ...prev, [id]: updatedFields }));
+            }
+        }
+
         setCart(prev => {
             if (qty === 0) {
                 const { [id]: _, ...rest } = prev;
@@ -348,6 +372,9 @@ const YearEndPlanner: React.FC = () => {
 
     const handleExportConfig = () => {
         const config: PlannerConfig = {
+            title,
+            time: timeStr,
+            location,
             budget,
             floatRatio,
             peopleDigitalCenter,
@@ -355,34 +382,37 @@ const YearEndPlanner: React.FC = () => {
             itbpLeads,
             peopleGuests,
             tableCount,
+            mealPrice,
+            dinnerMenu,
             cart,
             customMaterials,
             customPrizes,
             prizeEdits,
             customRedEnvelopes,
-            redEnvelopeEdits
+            redEnvelopeEdits,
+            itemEdits
         };
         const blob = new Blob([JSON.stringify(config, null, 4)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'planner_config.json';
+        a.download = 'full_planner_config.json';
         a.click();
         URL.revokeObjectURL(url);
 
-        // Also log to console for easy copying
-        console.log('--- Planner Configuration ---');
+        console.log('--- Full Planner Configuration ---');
         console.log(JSON.stringify(config, null, 4));
-        alert('配置已生成！\n1. 请将下载的 planner_config.json 文件内容发给我。\n2. 或者从控制台打印的结果中复制发给我。');
+        alert('全量配置已生成！\n请将下载的文件发给我。');
     };
 
     const handleClearLocalCache = () => {
         if (confirm('确定要清除本地缓存并恢复默认配置吗？')) {
             const keys = [
+                'title', 'timeStr', 'location',
                 'budget', 'floatRatio', 'peopleDigitalCenter', 'peopleCommercialVehicle',
-                'itbpLeads', 'peopleGuests', 'tableCount', 'cart',
+                'itbpLeads', 'peopleGuests', 'tableCount', 'mealPrice', 'dinnerMenu', 'cart',
                 'customMaterials', 'customPrizes', 'prizeEdits',
-                'customRedEnvelopes', 'redEnvelopeEdits'
+                'customRedEnvelopes', 'redEnvelopeEdits', 'itemEdits'
             ];
             keys.forEach(key => localStorage.removeItem(`planner_${key}`));
             window.location.reload();
@@ -394,10 +424,28 @@ const YearEndPlanner: React.FC = () => {
     return (
         <div className="container py-8 max-w-7xl mx-auto">
             <header className="mb-12 text-center relative">
-                <h1 className="text-4xl md:text-5xl font-outfit font-bold mb-4 text-gradient">年会筹备</h1>
-                <div className="text-text-dim text-sm md:text-base space-y-1">
-                    <div>年会时间: 2月6日 下午六点开始</div>
-                    <div>地点: 龙山露营地 途居厅</div>
+                <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full text-center text-4xl md:text-5xl font-outfit font-bold mb-4 bg-transparent outline-none focus:text-accent-blue border-b border-transparent hover:border-white/10 transition-all text-gradient"
+                />
+                <div className="text-text-dim text-sm md:text-base space-y-2 flex flex-col items-center">
+                    <div className="flex items-center gap-2">
+                        <span>年会时间:</span>
+                        <input
+                            value={timeStr}
+                            onChange={(e) => setTimeStr(e.target.value)}
+                            className="bg-white/5 border border-white/10 rounded px-2 py-0.5 min-w-[200px] text-center"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span>地点:</span>
+                        <input
+                            value={location}
+                            onChange={(e) => setLocation(e.target.value)}
+                            className="bg-white/5 border border-white/10 rounded px-2 py-0.5 min-w-[200px] text-center"
+                        />
+                    </div>
                 </div>
 
                 {/* Developer Tools */}
@@ -501,8 +549,14 @@ const YearEndPlanner: React.FC = () => {
                                     </div>
                                     <div className="space-y-2">
                                         {itbpLeads.map((lead, index) => (
-                                            <div key={lead.name} className="grid grid-cols-4 gap-2 items-center">
-                                                <span className="text-sm text-text-main truncate">{lead.name}</span>
+                                            <div key={index} className="grid grid-cols-4 gap-2 items-center">
+                                                <input
+                                                    type="text"
+                                                    value={lead.name}
+                                                    onChange={(e) => setItbpLeads(prev => prev.map((item, i) => i === index ? { ...item, name: e.target.value } : item))}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-sm focus:border-accent-blue/50 outline-none transition-all text-text-main"
+                                                    placeholder="姓名"
+                                                />
                                                 <input
                                                     type="number"
                                                     value={lead.people}
@@ -532,6 +586,12 @@ const YearEndPlanner: React.FC = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                        <button
+                                            onClick={() => setItbpLeads(prev => [...prev, { name: '新人员', people: 0, perPerson: 0, extra: 0 }])}
+                                            className="w-full py-1 border border-dashed border-white/10 rounded-lg text-xs text-text-dim hover:text-accent-blue hover:border-accent-blue/30 transition-all flex items-center justify-center gap-1"
+                                        >
+                                            <Plus size={12} /> 添加人员
+                                        </button>
                                     </div>
                                     <div className="flex justify-between items-center text-xs pt-1">
                                         <span className="text-text-dim">ITBP合计:</span>
@@ -578,9 +638,14 @@ const YearEndPlanner: React.FC = () => {
 
                             <div className="space-y-2">
                                 <label className="text-sm text-text-dim">餐标/桌</label>
-                                <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-                                    <span className="text-text-dim text-sm">餐标固定</span>
-                                    <span className="text-lg font-mono text-accent-blue font-bold">¥{mealPrice}</span>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="number"
+                                        value={mealPrice}
+                                        onChange={(e) => setMealPrice(Math.max(0, Number(e.target.value)))}
+                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 font-mono focus:border-accent-blue/50 outline-none transition-all"
+                                    />
+                                    <span className="text-accent-blue font-bold font-mono">¥</span>
                                 </div>
                             </div>
                         </div>
@@ -718,19 +783,61 @@ const YearEndPlanner: React.FC = () => {
                             <span className="text-sm text-text-dim">套餐合计: ¥{mealPrice}</span>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {dinnerMenu.map((section) => (
-                                <div key={section.title} className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                                    <div className="text-sm font-bold text-text-main mb-2">{section.title}</div>
+                            {dinnerMenu.map((section, sIndex) => (
+                                <div key={sIndex} className="bg-white/5 rounded-2xl p-4 border border-white/10 group">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <input
+                                            value={section.title}
+                                            onChange={(e) => setDinnerMenu(prev => prev.map((s, i) => i === sIndex ? { ...s, title: e.target.value } : s))}
+                                            className="text-sm font-bold text-text-main bg-transparent outline-none focus:text-accent-blue"
+                                        />
+                                        <button
+                                            onClick={() => setDinnerMenu(prev => prev.filter((_, i) => i !== sIndex))}
+                                            className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition-all"
+                                        >
+                                            <Trash2 size={12} className="text-red-400" />
+                                        </button>
+                                    </div>
                                     <ul className="space-y-1 text-sm text-text-dim">
-                                        {section.items.map((item) => (
-                                            <li key={item} className="flex items-start gap-2">
-                                                <span className="text-accent-blue mt-0.5">-</span>
-                                                <span>{item}</span>
+                                        {section.items.map((item, iIndex) => (
+                                            <li key={iIndex} className="flex items-center gap-2">
+                                                <span className="text-accent-blue">-</span>
+                                                <input
+                                                    value={item}
+                                                    onChange={(e) => setDinnerMenu(prev => prev.map((s, i) => i === sIndex ? {
+                                                        ...s,
+                                                        items: s.items.map((it, j) => j === iIndex ? e.target.value : it)
+                                                    } : s))}
+                                                    className="flex-1 bg-transparent outline-none focus:text-white"
+                                                />
+                                                <button
+                                                    onClick={() => setDinnerMenu(prev => prev.map((s, i) => i === sIndex ? {
+                                                        ...s,
+                                                        items: s.items.filter((_, j) => j !== iIndex)
+                                                    } : s))}
+                                                    className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-500/20 rounded"
+                                                >
+                                                    <Minus size={10} className="text-red-400" />
+                                                </button>
                                             </li>
                                         ))}
+                                        <li>
+                                            <button
+                                                onClick={() => setDinnerMenu(prev => prev.map((s, i) => i === sIndex ? { ...s, items: [...s.items, '新增菜品'] } : s))}
+                                                className="text-xs text-text-dim hover:text-accent-blue flex items-center gap-1 mt-1"
+                                            >
+                                                <Plus size={10} /> 加菜
+                                            </button>
+                                        </li>
                                     </ul>
                                 </div>
                             ))}
+                            <button
+                                onClick={() => setDinnerMenu(prev => [...prev, { title: '新分类', items: ['新菜品'] }])}
+                                className="border-2 border-dashed border-white/5 rounded-2xl p-4 flex items-center justify-center text-text-dim hover:text-accent-blue hover:border-accent-blue/30 transition-all opacity-50 hover:opacity-100"
+                            >
+                                <Plus size={20} />
+                            </button>
                         </div>
                     </motion.div>
                     {/* Tabs */}
@@ -1081,11 +1188,11 @@ const YearEndPlanner: React.FC = () => {
                                                             <Trash2 size={14} className="text-red-400" />
                                                         </button>
                                                     )}
-                                                    {isEditableReward && !isEditingReward && (
+                                                    {!isEditingReward && (
                                                         <button
                                                             onClick={() => handleStartEditReward(drink)}
                                                             className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all"
-                                                            title="????"
+                                                            title="编辑此项"
                                                         >
                                                             <Pencil size={14} className="text-text-dim" />
                                                         </button>
