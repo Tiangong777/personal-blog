@@ -31,32 +31,46 @@ const AiManageChat: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const isNearBottomRef = useRef(true);
 
+    // Ref to track loading state for scroll behavior (avoids re-render cycles)
+    const isLoadingRef = useRef(false);
+    useEffect(() => {
+        isLoadingRef.current = isLoading;
+    }, [isLoading]);
+
     const scrollToBottom = useCallback((force = false) => {
         if (!force && !isNearBottomRef.current) return;
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const el = chatContainerRef.current;
+        if (!el) return;
+        // Instant scroll during streaming so text follows naturally.
+        // Smooth scroll otherwise for a nicer feel.
+        el.scrollTo({ top: el.scrollHeight, behavior: isLoadingRef.current ? 'instant' : 'smooth' });
     }, []);
 
     const handleScroll = useCallback(() => {
         const el = chatContainerRef.current;
         if (!el) return;
-        const threshold = 60;
+        const threshold = 80;
         isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
     }, []);
 
+    // Initial scroll — instant
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'instant' as ScrollBehavior });
+        const el = chatContainerRef.current;
+        if (el) el.scrollTop = el.scrollHeight;
     }, []);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages, scrollToBottom]);
 
+    // Force scroll when loading starts
     useEffect(() => {
         if (isLoading) {
             isNearBottomRef.current = true;
-            scrollToBottom(true);
+            const el = chatContainerRef.current;
+            if (el) el.scrollTop = el.scrollHeight;
         }
-    }, [isLoading, scrollToBottom]);
+    }, [isLoading]);
 
     const sendMessage = async () => {
         if (!input.trim() || isLoading) return;
