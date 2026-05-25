@@ -38,8 +38,8 @@ const TravelMap: React.FC = () => {
         <section>
             <div className="flex justify-between items-end mb-12 border-l-4 border-accent pl-6">
                 <div>
-                    <h2 className="text-3xl md:text-4xl font-heading font-black tracking-tighter uppercase">Travel_Logs</h2>
-                    <p className="text-text-secondary font-mono text-xs mt-2 font-bold tracking-widest opacity-50 uppercase">Geospatial footprint</p>
+                    <h2 className="text-3xl md:text-4xl font-heading font-black tracking-tighter uppercase">足迹</h2>
+                    <p className="text-text-secondary font-mono text-xs mt-2 font-bold tracking-widest opacity-50 uppercase">到过的地方</p>
                 </div>
                 <div className="text-right">
                     <span className="text-[20px] font-heading font-black text-accent tracking-tighter leading-none block">

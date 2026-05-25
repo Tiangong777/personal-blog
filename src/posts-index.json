@@ -4,7 +4,7 @@
     "title": "Householder tridiagonalization algorithm",
     "date": "2026.01.01",
     "category": "Algorithm",
-    "excerpt": "---\r\ntitle: Householder tridiagonalization algorithm\r\ncategory: Algorithm\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 普适算法\r\npython\r\nimport...",
+    "excerpt": "普适算法 python import numpy as np def HouseHolder_Tridigonal(matrix): n = matrix.shape[0] v = np.zeros((n, 1)) print('original matrix is:') print(matrix) for i in range(1...",
     "path": "_posts/algorithm/Householder tridiagonalization algorithm.md",
     "slug": "householder-tridiagonalization-algorithm"
   },
@@ -13,7 +13,7 @@
     "title": "蒙特卡洛计算阴影面积",
     "date": "2026.01.01",
     "category": "Algorithm",
-    "excerpt": "---\r\ntitle: 蒙特卡洛计算阴影面积\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n some packages and input\r\npython\r\nimport numpy as np\r\nimport mat...",
+    "excerpt": "some packages and input python import numpy as np import matplotlib.pyplot as plt import matplotlib.patches as patches Data python width = 4 height = 4 num_samples = 100000000 x_samp...",
     "path": "_posts/algorithm/Monte Carlo method.md",
     "slug": "monte-carlo-method"
   },
@@ -22,7 +22,7 @@
     "title": "Classic Sort",
     "date": "2026.01.01",
     "category": "Algorithm",
-    "excerpt": "---\r\ntitle: Classic Sort\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n some packages and input\r\npython\r\nimport random\r\nimport time...",
+    "excerpt": "some packages and input python import random import time import sys import os import psutil import time import matplotlib.pyplot as plt def memory_usage(): 返回整个python进程的内存使用量 process...",
     "path": "_posts/algorithm/sort.md",
     "slug": "sort"
   },
@@ -31,7 +31,7 @@
     "title": "Traveling Salesman Problem",
     "date": "2026.01.01",
     "category": "Algorithm",
-    "excerpt": "---\r\ntitle: Traveling Salesman Problem\r\ncategory: Algorithm\r\npublished: false\r\nhide: true\r\n---\r\n The problem\r\nA traveling salesman plans to do busi...",
+    "excerpt": "The problem A traveling salesman plans to do business in several cities. He needs to find a route that allows him to depart from a certain city, visit every other city exactly once, and eventually...",
     "path": "_posts/algorithm/TSP-GA.md",
     "slug": "tsp-ga"
   },
@@ -39,8 +39,8 @@
     "id": 5,
     "title": "Basics of neural networks",
     "date": "2026.01.01",
-    "category": "Machine learining",
-    "excerpt": "---\r\ntitle: Basics of neural networks\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Application Network\r\nImplement...",
+    "category": "Machine Learning",
+    "excerpt": "Application Network Implement a simple Multi-Layer Perceptron classifier using numpy. ReLULayer python import numpy as np from sklearn import datasets import matplotlib.pyplot as plt def...",
     "path": "_posts/aml/Basics of neural networks.md",
     "slug": "basics-of-neural-networks"
   },
@@ -48,8 +48,8 @@
     "id": 6,
     "title": "Regularized Logistic Regression",
     "date": "2026.01.01",
-    "category": "Machine learining",
-    "excerpt": "---\r\ntitle:  Regularized Logistic Regression\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Regularized Logistic Reg...",
+    "category": "Machine Learning",
+    "excerpt": "Regularized Logistic Regression A binary classifier that assigns a label $y_i$ ∈ {−1, 1} to a sample $X_i$ ∈ $R^D$ (a row vector) in terms of a winner-takes-all decision $$\\\\widehat{y}=\\\\operatorna...",
     "path": "_posts/aml/Regularized Logistic Regression.md",
     "slug": "regularized-logistic-regression"
   },
@@ -57,8 +57,8 @@
     "id": 7,
     "title": "AML project-Transfer Graph Neural Networks",
     "date": "2026.01.01",
-    "category": "Machine learining",
-    "excerpt": "---\r\ntitle: AML project-Transfer Graph Neural Networks\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Abstract\r\nCor...",
+    "category": "Machine Learning",
+    "excerpt": "Abstract Corona virus pandemic, which is first outbreak in late 2019, has caused huge economic losses and cost many lives all over the world. It is clear that human mobility is a main reason to it...",
     "path": "_posts/aml/TransferGraphNeuralNetworks.md",
     "slug": "transfergraphneuralnetworks"
   },
@@ -66,8 +66,8 @@
     "id": 8,
     "title": "VAE and CVAE",
     "date": "2026.01.01",
-    "category": "Machine learining",
-    "excerpt": "---\r\ntitle: VAE and CVAE\r\ncategory: Machine learining\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n Basics of VAE\r\n$$\r\n\\log p^\\left(x^{(i)}\\ri...",
+    "category": "Machine Learning",
+    "excerpt": "Basics of VAE $$ \\log p^ \\left(x^{(i)}\\right) \\geq-D_{K L}\\left[p_E\\left(z \\mid x^{(i)}\\right) \\| p(z)\\right]+\\mathbb{E}_{z \\sim p_E\\left(z \\mid x^{(i)}\\right)}\\left[\\log p_D\\left(x^{(i)} \\mid z\\r...",
     "path": "_posts/aml/VAE and CVAE.md",
     "slug": "vae-and-cvae"
   },
@@ -76,7 +76,7 @@
     "title": "识别男女EEG的一个简单CNN",
     "date": "2026.01.01",
     "category": "EEG",
-    "excerpt": "---\r\ntitle: 识别男女EEG的一个简单CNN\r\ncategory: EEG\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 读取并聚类\r\n包括读取，清洗，转换和聚类\r\n 读取和聚类\r\n python\r\ndef read...",
+    "excerpt": "读取并聚类 包括读取，清洗，转换和聚类 读取和聚类 python def read(index): return mne.io.read_raw_brainvision('data/EEG Data D'+index+'/PSP_D'+index+'_Int_sub_Segmentation_Cognition_positive.vhdr',misc=['IO_1...",
     "path": "_posts/EEG/EEG male female.md",
     "slug": "eeg-male-female"
   },
@@ -85,7 +85,7 @@
     "title": "计算两个participants之间的PLV或者WPLI",
     "date": "2026.01.01",
     "category": "EEG",
-    "excerpt": "---\r\ntitle: 计算两个participants之间的PLV或者WPLI\r\ncategory: EEG\r\nkatex: true\r\npublished: false\r\nhide: true\r\n---\r\n 计算流程\r\n包括读取，清洗，转换，ICA，计算\r\n 导入包\r\n py...",
+    "excerpt": "计算流程 包括读取，清洗，转换，ICA，计算 导入包 python from hypyp import analyses from hypyp import stats import os import mne import numpy as np import matplotlib.pyplot as plt import pandas as pd from hypyp...",
     "path": "_posts/EEG/Phase Locking Value.md",
     "slug": "phase-locking-value"
   }
