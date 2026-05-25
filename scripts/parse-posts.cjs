@@ -32,7 +32,7 @@ function parsePosts() {
             date: data.date ? new Date(data.date).toLocaleDateString() : '2026.01.01',
             category: data.category || 'Uncategorized',
             excerpt: data.description || content.slice(0, 200).replace(/[#*`\n\r]/g, ' ').replace(/\s{2,}/g, ' ').trim() + '...',
-            path: relForward,
+            path: 'posts/' + relForward.substring(relForward.indexOf('/') + 1),
             slug: path.basename(filePath, '.md').replace(/\s+/g, '-').toLowerCase()
         };
     });
