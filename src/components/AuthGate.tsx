@@ -74,13 +74,13 @@ const AuthGate: React.FC<AuthGateProps> = ({ children }) => {
             <div className="w-full max-w-md">
                 <form onSubmit={handleLogin} className="glass rounded-3xl p-8 md:p-10 space-y-6 border border-white/10">
                     <div className="text-center">
-                        <div className="inline-flex p-4 rounded-2xl bg-accent-blue/10 text-accent-blue mb-4">
+                        <div className="inline-flex p-4 rounded-2xl bg-accent/10 text-accent mb-4">
                             <LockKeyhole size={28} />
                         </div>
-                        <h2 className="text-xl font-outfit font-black tracking-widest text-text-main">
+                        <h2 className="text-xl font-heading font-black tracking-widest text-text-primary">
                             AI_KNOWLEDGE_PORTAL
                         </h2>
-                        <p className="mt-2 text-xs font-mono text-text-dim">
+                        <p className="mt-2 text-xs font-mono text-text-secondary">
                             Secure access required · Session lasts 7 days
                         </p>
                     </div>
@@ -94,18 +94,18 @@ const AuthGate: React.FC<AuthGateProps> = ({ children }) => {
 
                     <div className="space-y-4">
                         <label className="block">
-                            <span className="block mb-2 font-mono text-[11px] font-bold tracking-widest text-text-dim">PASSWORD</span>
+                            <span className="block mb-2 font-mono text-[11px] font-bold tracking-widest text-text-secondary">PASSWORD</span>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="输入访问密码"
                                 autoFocus
-                                className="w-full bg-white/5 border border-border-color focus:border-accent-blue/50 rounded-xl px-4 py-3 text-sm text-text-main placeholder:text-text-dim/40 outline-none transition-all"
+                                className="w-full bg-white/5 border border-border focus:border-accent/50 rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/40 outline-none transition-all"
                             />
                         </label>
                         <label className="block">
-                            <span className="block mb-2 font-mono text-[11px] font-bold tracking-widest text-text-dim">
+                            <span className="block mb-2 font-mono text-[11px] font-bold tracking-widest text-text-secondary">
                                 TOTP_CODE <span className="opacity-50">(optional)</span>
                             </span>
                             <input
@@ -114,7 +114,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ children }) => {
                                 onChange={(e) => setTotpCode(e.target.value)}
                                 placeholder="6-digit code if enabled"
                                 maxLength={6}
-                                className="w-full bg-white/5 border border-border-color focus:border-accent-blue/50 rounded-xl px-4 py-3 text-sm text-text-main placeholder:text-text-dim/40 outline-none transition-all"
+                                className="w-full bg-white/5 border border-border focus:border-accent/50 rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-secondary/40 outline-none transition-all"
                             />
                         </label>
                     </div>
@@ -122,7 +122,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ children }) => {
                     <button
                         type="submit"
                         disabled={isLoading || !password.trim()}
-                        className="w-full flex items-center justify-center gap-3 bg-accent-blue text-black rounded-xl py-3 font-mono text-sm font-bold tracking-widest hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,242,255,0.2)] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all"
+                        className="w-full flex items-center justify-center gap-3 bg-accent text-black rounded-xl py-3 font-mono text-sm font-bold tracking-widest hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,242,255,0.2)] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all"
                     >
                         {isLoading ? <Loader2 size={18} className="animate-spin" /> : <LockKeyhole size={18} />}
                         {isLoading ? 'VERIFYING...' : 'UNLOCK_KNOWLEDGE'}

@@ -1,48 +1,72 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Hero from '../components/Hero';
-import PostCard from '../components/PostCard';
 import Photography from '../components/Photography';
 import TravelMap from '../components/TravelMap';
-import postsIndex from '../posts-index.json';
+import { Link } from 'react-router-dom';
+import postIndex from '../posts-index.json';
 
-// Take the latest 3 posts as featured
-const featuredPosts = [...postsIndex]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+const recentPosts = [...postIndex]
+    .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
 
-const Home: React.FC = () => {
-    return (
-        <div className="flex flex-col gap-24 md:gap-40">
-            <Hero />
+const Home: React.FC = () => (
+    <div>
+        <Hero />
 
-            <main className="container space-y-32 md:space-y-48">
-                <Photography />
-                <TravelMap />
+        {/* Recent Posts */}
+        <section className="max-w-5xl mx-auto px-6 py-24">
+            <h2 className="text-center mb-12">最新文章</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {recentPosts.map((post: any) => (
+                    <Link key={post.id} to={`/blog/${post.id}`}
+                        className="card card-hover p-6 flex flex-col gap-3 animate-in">
+                        <span className="text-xs text-accent font-medium">{post.category}</span>
+                        <h3 className="text-lg font-semibold">{post.title}</h3>
+                        <p className="text-sm text-text-secondary line-clamp-2">{post.excerpt}</p>
+                        <span className="text-xs text-text-secondary mt-auto">{post.date}</span>
+                    </Link>
+                ))}
+            </div>
+            <div className="text-center mt-10">
+                <Link to="/blog" className="text-sm text-accent hover:text-accent-hover transition-colors">
+                    查看全部文章 →
+                </Link>
+            </div>
+        </section>
 
-                <section>
-                    <div className="flex justify-between items-end mb-12 border-l-4 border-accent-blue pl-6">
-                        <div>
-                            <h2 className="text-3xl md:text-4xl font-outfit font-black tracking-tighter">FEATURED_LOGS</h2>
-                            <p className="text-text-dim font-mono text-sm mt-2 font-bold tracking-widest opacity-50 uppercase">Knowledge Base Update</p>
-                        </div>
-                        <Link
-                            to="/blog"
-                            className="text-xs font-bold tracking-widest text-accent-blue hover:underline underline-offset-8 decoration-2"
-                        >
-                            VIEW_ALL_INDEX
-                        </Link>
-                    </div>
+        {/* Photography */}
+        <section className="py-24">
+            <div className="max-w-6xl mx-auto px-6">
+                <h2 className="text-center mb-12">摄影作品</h2>
+            </div>
+            <Photography />
+        </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {featuredPosts.map((post) => (
-                            <PostCard key={post.id} {...post} />
-                        ))}
-                    </div>
-                </section>
-            </main>
-        </div>
-    );
-};
+        {/* Travel Map */}
+        <section className="max-w-6xl mx-auto px-6 py-24">
+            <h2 className="text-center mb-12">足迹</h2>
+            <TravelMap />
+        </section>
+
+        {/* Capabilities */}
+        <section className="max-w-5xl mx-auto px-6 py-24">
+            <h2 className="text-center mb-12">工具箱</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                    { label: '项目管理', desc: 'AI驱动的项目资源管理器', path: '/ai-manage' },
+                    { label: '招聘AI', desc: '简历智能匹配与评估', path: '/talent' },
+                    { label: '量化分析', desc: '股票数据与市场洞察', path: '/stock' },
+                    { label: '文章', desc: '技术分享与思考', path: '/blog' },
+                ].map(item => (
+                    <Link key={item.label} to={item.path}
+                        className="card card-hover p-6 text-center animate-in">
+                        <h3 className="text-lg font-semibold mb-2">{item.label}</h3>
+                        <p className="text-xs text-text-secondary">{item.desc}</p>
+                    </Link>
+                ))}
+            </div>
+        </section>
+    </div>
+);
 
 export default Home;

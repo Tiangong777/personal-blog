@@ -224,16 +224,16 @@ const AiManageChatInner: React.FC = () => {
                             <div key={idx}>
                                 <div className="py-5">
                                     <div className="flex items-center gap-2 mb-3">
-                                        <div className={`p-1 rounded-md ${msg.role === 'user' ? 'bg-accent-blue/15 text-accent-blue' : 'bg-white/10 text-text-dim'}`}>
+                                        <div className={`p-1 rounded-md ${msg.role === 'user' ? 'bg-accent/15 text-accent' : 'bg-white/10 text-text-secondary'}`}>
                                             {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
                                         </div>
-                                        <span className="text-xs font-semibold tracking-wide text-text-dim uppercase">
+                                        <span className="text-xs font-semibold tracking-wide text-text-secondary uppercase">
                                             {msg.role === 'user' ? 'You' : 'AI Project Manager'}
                                         </span>
                                     </div>
                                     <div className={`text-base leading-7 ${msg.role === 'user'
-                                        ? 'text-text-main'
-                                        : 'text-text-main prose prose-invert max-w-none prose-base prose-headings:text-text-main prose-p:leading-7 prose-li:leading-7 prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-table:text-sm prose-th:text-left prose-td:px-3 prose-th:px-3 prose-th:py-2 prose-td:py-2 prose-table:border-separate prose-table:border-spacing-0 prose-thead:border-b prose-thead:border-white/10 prose-tr:border-b prose-tr:border-white/5'
+                                        ? 'text-text-primary'
+                                        : 'text-text-primary prose prose-invert max-w-none prose-base prose-headings:text-text-primary prose-p:leading-7 prose-li:leading-7 prose-code:bg-white/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-pre:bg-white/5 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-xl prose-table:text-sm prose-th:text-left prose-td:px-3 prose-th:px-3 prose-th:py-2 prose-td:py-2 prose-table:border-separate prose-table:border-spacing-0 prose-thead:border-b prose-thead:border-white/10 prose-tr:border-b prose-tr:border-white/5'
                                         }`}>
                                         {msg.role === 'user' ? msg.content : (
                                             <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex, rehypeRaw]}>
@@ -246,10 +246,10 @@ const AiManageChatInner: React.FC = () => {
                                     {idx === messages.length - 1 && citations.length > 0 && (
                                         <div className="mt-3 flex flex-wrap gap-2">
                                             {citations.map(c => (
-                                                <div key={c.entry_id} className="flex items-center gap-1 px-2 py-1 bg-accent-blue/10 border border-accent-blue/20 rounded-lg text-[11px] text-accent-blue">
+                                                <div key={c.entry_id} className="flex items-center gap-1 px-2 py-1 bg-accent/10 border border-accent/20 rounded-lg text-[11px] text-accent">
                                                     <BookOpen size={12} /> <span>{c.title}</span>
                                                     <button onClick={() => setShowAnnotationFor({ entryId: c.entry_id, entryTitle: c.title, msgIdx: idx })}
-                                                        className="ml-1 p-0.5 hover:bg-accent-blue/20 rounded transition-all">
+                                                        className="ml-1 p-0.5 hover:bg-accent/20 rounded transition-all">
                                                         <MessageSquarePlus size={12} />
                                                     </button>
                                                 </div>
@@ -270,7 +270,7 @@ const AiManageChatInner: React.FC = () => {
                                 {/* Proposal cards */}
                                 {proposals && proposals.msgIdx === idx && (
                                     <div className="ml-10 space-y-3 pb-4">
-                                        <div className="text-xs font-mono font-bold text-accent-blue mb-2">
+                                        <div className="text-xs font-mono font-bold text-accent mb-2">
                                             PENDING PROPOSALS — AI wants to write to knowledge base:
                                         </div>
                                         {proposals.proposals.map((p, pi) => {
@@ -281,31 +281,31 @@ const AiManageChatInner: React.FC = () => {
                                                 </div>
                                             );
                                             if (status === 'rejected') return (
-                                                <div key={pi} className="flex items-center gap-2 p-3 bg-white/5 border border-white/5 rounded-xl text-xs text-text-dim line-through">
+                                                <div key={pi} className="flex items-center gap-2 p-3 bg-white/5 border border-white/5 rounded-xl text-xs text-text-secondary line-through">
                                                     <XCircle size={14} /> Rejected: {p.title}
                                                 </div>
                                             );
                                             const display = editingProposal && pi === proposals.proposals.indexOf(p) ? editingProposal : p;
                                             const isEditing = editingProposal && pi === proposals.proposals.indexOf(p);
                                             return (
-                                                <div key={pi} className="p-4 bg-accent-blue/5 border border-accent-blue/20 rounded-xl space-y-3">
+                                                <div key={pi} className="p-4 bg-accent/5 border border-accent/20 rounded-xl space-y-3">
                                                     {isEditing ? (
                                                         <>
                                                             <input value={display.title}
                                                                 onChange={e => setEditingProposal({ ...display, title: e.target.value })}
-                                                                className="w-full bg-white/5 border border-border-color rounded px-3 py-1.5 text-xs text-text-main outline-none" />
+                                                                className="w-full bg-white/5 border border-border rounded px-3 py-1.5 text-xs text-text-primary outline-none" />
                                                             <textarea value={display.description}
                                                                 onChange={e => setEditingProposal({ ...display, description: e.target.value })}
-                                                                className="w-full bg-white/5 border border-border-color rounded px-3 py-2 text-xs text-text-main outline-none min-h-[60px] resize-y" />
+                                                                className="w-full bg-white/5 border border-border rounded px-3 py-2 text-xs text-text-primary outline-none min-h-[60px] resize-y" />
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <div className="font-bold text-sm text-text-main">{display.title}</div>
-                                                            <div className="text-xs text-text-dim">{display.description?.slice(0, 500)}</div>
+                                                            <div className="font-bold text-sm text-text-primary">{display.title}</div>
+                                                            <div className="text-xs text-text-secondary">{display.description?.slice(0, 500)}</div>
                                                             <div className="flex gap-2">
-                                                                <span className="text-[9px] font-mono px-1.5 py-0.5 bg-white/10 rounded text-text-dim">{display.category}</span>
+                                                                <span className="text-[9px] font-mono px-1.5 py-0.5 bg-white/10 rounded text-text-secondary">{display.category}</span>
                                                                 {display.tags?.map((t: string) => (
-                                                                    <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 bg-white/10 rounded text-text-dim">{t}</span>
+                                                                    <span key={t} className="text-[9px] font-mono px-1.5 py-0.5 bg-white/10 rounded text-text-secondary">{t}</span>
                                                                 ))}
                                                             </div>
                                                         </>
@@ -319,12 +319,12 @@ const AiManageChatInner: React.FC = () => {
                                                         </button>
                                                         <button
                                                             onClick={() => isEditing ? setEditingProposal(null) : handleEditProposal(p)}
-                                                            className="flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 text-text-dim rounded-lg text-xs hover:bg-white/10 transition-all">
+                                                            className="flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 text-text-secondary rounded-lg text-xs hover:bg-white/10 transition-all">
                                                             <Edit3 size={14} /> {isEditing ? 'CANCEL' : 'EDIT'}
                                                         </button>
                                                         <button
                                                             onClick={() => handleRejectProposal(pi)}
-                                                            className="flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 text-text-dim rounded-lg text-xs hover:bg-red-500/10 hover:text-red-400 transition-all">
+                                                            className="flex items-center gap-1 px-3 py-1.5 bg-white/5 border border-white/10 text-text-secondary rounded-lg text-xs hover:bg-red-500/10 hover:text-red-400 transition-all">
                                                             <XCircle size={14} /> REJECT
                                                         </button>
                                                     </div>
@@ -338,10 +338,10 @@ const AiManageChatInner: React.FC = () => {
                         {isLoading && messages[messages.length - 1]?.role === 'user' && (
                             <div className="py-5">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <div className="p-1 rounded-md bg-white/10 text-text-dim"><Bot size={14} /></div>
-                                    <span className="text-xs font-semibold tracking-wide text-text-dim uppercase">AI Project Manager</span>
+                                    <div className="p-1 rounded-md bg-white/10 text-text-secondary"><Bot size={14} /></div>
+                                    <span className="text-xs font-semibold tracking-wide text-text-secondary uppercase">AI Project Manager</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-text-dim"><Loader2 size={16} className="animate-spin" /><span className="text-sm">正在查询项目数据...</span></div>
+                                <div className="flex items-center gap-3 text-text-secondary"><Loader2 size={16} className="animate-spin" /><span className="text-sm">正在查询项目数据...</span></div>
                             </div>
                         )}
                         <div ref={messagesEndRef} />
@@ -350,20 +350,20 @@ const AiManageChatInner: React.FC = () => {
                 <div className="shrink-0 w-full max-w-3xl mx-auto px-4 md:px-6 pb-6">
                     <div className="flex items-center gap-2 mb-2">
                         <button onClick={newConversation}
-                            className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-text-dim/50 hover:text-text-dim transition-all border border-white/5 rounded-lg hover:border-white/10">
+                            className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-text-secondary/50 hover:text-text-secondary transition-all border border-white/5 rounded-lg hover:border-white/10">
                             <Plus size={12} /> NEW_CONVERSATION
                         </button>
                     </div>
                     <div className="relative">
                         <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
                             placeholder="输入问题，例如：有哪些延期项目？KG-006的详情？"
-                            className="w-full bg-white/5 border border-border-color focus:border-accent-blue/40 rounded-xl px-5 py-3.5 pr-12 text-sm text-text-main placeholder:text-text-dim/40 outline-none transition-all" />
+                            className="w-full bg-white/5 border border-border focus:border-accent/40 rounded-xl px-5 py-3.5 pr-12 text-sm text-text-primary placeholder:text-text-secondary/40 outline-none transition-all" />
                         <button onClick={sendMessage} disabled={!input.trim() || isLoading}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-accent-blue text-black rounded-lg hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 transition-all">
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-accent text-black rounded-lg hover:scale-105 active:scale-95 disabled:opacity-30 disabled:hover:scale-100 transition-all">
                             <Send size={16} />
                         </button>
                     </div>
-                    <div className="text-[10px] font-mono text-text-dim/25 text-center mt-3">
+                    <div className="text-[10px] font-mono text-text-secondary/25 text-center mt-3">
                         RAG_ENABLED · FTS5 search · Proposal workflow enabled
                     </div>
                 </div>

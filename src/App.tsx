@@ -1,19 +1,17 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Layout from './components/Layout';
 import Home from './pages/Home';
 import BlogList from './pages/BlogList';
 import PostDetail from './pages/PostDetail';
-import LegalChat from './pages/LegalChat';
-import YearEndPlanner from './pages/YearEndPlanner';
+import StockPortal from './pages/StockPortal';
+import TalentAI from './pages/TalentAI';
+import AiManageChat from './pages/AiManageChat';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
   return null;
 }
 
@@ -28,30 +26,28 @@ function AppContent() {
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   return (
-    <div className="min-h-screen flex flex-col font-sans transition-colors duration-500">
+    <div className="min-h-screen flex flex-col bg-bg-base text-text-primary transition-colors duration-500">
       <Navbar theme={theme} toggleTheme={toggleTheme} />
-
-      <Layout>
-        <main className="flex-1 pt-24 pb-20">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/blog" element={<BlogList />} />
-            <Route path="/blog/:id" element={<PostDetail />} />
-            <Route path="/chat" element={<LegalChat />} />
-            <Route path="/planner" element={<YearEndPlanner />} />
-            <Route path="/about" element={
-              <div className="container py-20">
-                <div className="glass p-12 rounded-3xl max-w-2xl mx-auto border-accent-blue/20">
-                  <h1 className="text-4xl font-outfit font-bold mb-6 text-gradient">SYSTEM_STATUS</h1>
-                  <p className="text-text-dim font-mono mb-4">Version: 2.1.0-PRO_MAX</p>
-                  <p className="text-text-dim">Environment optimized for peak visual performance and smooth interaction logic.</p>
-                </div>
-              </div>
-            } />
-          </Routes>
-        </main>
-      </Layout>
-
+      <main className="flex-1 pt-20">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<BlogList />} />
+          <Route path="/blog/:id" element={<PostDetail />} />
+          <Route path="/planner" element={<Navigate to="/" replace />} />
+          <Route path="/stock" element={<StockPortal />} />
+          <Route path="/talent" element={<TalentAI />} />
+          <Route path="/ai-manage" element={<AiManageChat />} />
+          <Route path="/about" element={
+            <div className="max-w-2xl mx-auto px-6 py-32 text-center">
+              <p className="text-6xl mb-8">🍉</p>
+              <h1 className="mb-6">关于</h1>
+              <p className="text-text-secondary leading-relaxed">
+                一个关于 AI、数学、摄影与生活的个人博客。记录思考，分享创造。
+              </p>
+            </div>
+          } />
+        </Routes>
+      </main>
       <Footer />
     </div>
   );

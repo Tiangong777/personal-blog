@@ -90,7 +90,7 @@ const KnowledgeSidebar: React.FC<KnowledgeSidebarProps> = ({ token, onSelectEntr
                 className="fixed left-0 top-1/2 -translate-y-1/2 z-30 p-2 bg-white/5 border border-white/10 rounded-r-xl hover:bg-white/10 transition-all"
                 title="Open Knowledge Browser"
             >
-                <BookOpen size={18} className="text-accent-blue" />
+                <BookOpen size={18} className="text-accent" />
             </button>
         );
     }
@@ -99,24 +99,24 @@ const KnowledgeSidebar: React.FC<KnowledgeSidebarProps> = ({ token, onSelectEntr
         <div className="fixed left-0 top-16 bottom-0 z-30 w-80 glass border-r border-white/10 flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                    <BookOpen size={16} className="text-accent-blue" />
-                    <span className="text-xs font-mono font-bold tracking-wider text-text-main">
+                    <BookOpen size={16} className="text-accent" />
+                    <span className="text-xs font-mono font-bold tracking-wider text-text-primary">
                         KNOWLEDGE ({total})
                     </span>
                 </div>
-                <button onClick={() => { setIsOpen(false); onClose?.(); }} className="text-text-dim hover:text-text-main">
+                <button onClick={() => { setIsOpen(false); onClose?.(); }} className="text-text-secondary hover:text-text-primary">
                     <ChevronLeft size={18} />
                 </button>
             </div>
 
             <div className="p-3 border-b border-white/10">
                 <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" />
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
                     <input
                         type="text" value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder="Search knowledge..."
-                        className="w-full bg-white/5 border border-border-color rounded-lg pl-9 pr-3 py-2 text-xs text-text-main placeholder:text-text-dim/40 outline-none focus:border-accent-blue/50"
+                        className="w-full bg-white/5 border border-border rounded-lg pl-9 pr-3 py-2 text-xs text-text-primary placeholder:text-text-secondary/40 outline-none focus:border-accent/50"
                     />
                 </div>
             </div>
@@ -127,7 +127,7 @@ const KnowledgeSidebar: React.FC<KnowledgeSidebarProps> = ({ token, onSelectEntr
                         key={cat.key}
                         onClick={() => setCategory(cat.key)}
                         className={`shrink-0 px-2 py-1 text-[10px] font-mono font-bold tracking-wide rounded transition-all ${
-                            category === cat.key ? 'bg-accent-blue/20 text-accent-blue' : 'text-text-dim hover:text-text-main hover:bg-white/5'
+                            category === cat.key ? 'bg-accent/20 text-accent' : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
                         }`}
                     >{cat.label}</button>
                 ))}
@@ -135,23 +135,23 @@ const KnowledgeSidebar: React.FC<KnowledgeSidebarProps> = ({ token, onSelectEntr
 
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {isLoading ? (
-                    <div className="p-4 text-xs text-text-dim text-center">Loading...</div>
+                    <div className="p-4 text-xs text-text-secondary text-center">Loading...</div>
                 ) : entries.length === 0 ? (
-                    <div className="p-8 text-xs text-text-dim text-center">No entries found</div>
+                    <div className="p-8 text-xs text-text-secondary text-center">No entries found</div>
                 ) : entries.map(entry => (
                     <button
                         key={entry.entry_id}
                         onClick={() => handleSelect(entry)}
                         className={`w-full text-left p-3 border-b border-white/5 hover:bg-white/5 transition-all ${
-                            selectedId === entry.entry_id ? 'bg-accent-blue/10 border-l-2 border-l-accent-blue' : ''
+                            selectedId === entry.entry_id ? 'bg-accent/10 border-l-2 border-l-accent' : ''
                         }`}
                     >
                         <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-text-dim uppercase">{entry.category}</span>
-                            <span className="text-xs text-text-main truncate font-medium">{entry.title}</span>
+                            <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-text-secondary uppercase">{entry.category}</span>
+                            <span className="text-xs text-text-primary truncate font-medium">{entry.title}</span>
                         </div>
                         {entry.description && (
-                            <p className="mt-1 text-[11px] text-text-dim line-clamp-2">{entry.description}</p>
+                            <p className="mt-1 text-[11px] text-text-secondary line-clamp-2">{entry.description}</p>
                         )}
                     </button>
                 ))}
@@ -159,14 +159,14 @@ const KnowledgeSidebar: React.FC<KnowledgeSidebarProps> = ({ token, onSelectEntr
 
             {selectedEntry && (
                 <div className="border-t border-white/10 p-4 max-h-48 overflow-y-auto">
-                    <h4 className="text-sm font-bold text-text-main">{selectedEntry.title}</h4>
-                    <p className="mt-1 text-xs text-text-dim leading-relaxed">{selectedEntry.description || 'No description'}</p>
+                    <h4 className="text-sm font-bold text-text-primary">{selectedEntry.title}</h4>
+                    <p className="mt-1 text-xs text-text-secondary leading-relaxed">{selectedEntry.description || 'No description'}</p>
                     {selectedEntry.annotations && selectedEntry.annotations.length > 0 && (
                         <div className="mt-3 space-y-2">
-                            <span className="text-[10px] font-mono font-bold text-text-dim">ANNOTATIONS</span>
+                            <span className="text-[10px] font-mono font-bold text-text-secondary">ANNOTATIONS</span>
                             {selectedEntry.annotations.map(ann => (
-                                <div key={ann.annotation_id} className="text-[10px] text-text-dim bg-white/5 p-2 rounded border border-white/5">
-                                    <span className="text-accent-blue">[{ann.annotation_type}]</span> {ann.annotation_text}
+                                <div key={ann.annotation_id} className="text-[10px] text-text-secondary bg-white/5 p-2 rounded border border-white/5">
+                                    <span className="text-accent">[{ann.annotation_type}]</span> {ann.annotation_text}
                                 </div>
                             ))}
                         </div>
