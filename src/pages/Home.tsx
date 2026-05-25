@@ -15,55 +15,65 @@ const Home: React.FC = () => (
 
         {/* Recent Posts */}
         <section className="max-w-5xl mx-auto px-6 py-24">
-            <h2 className="text-center mb-12">最新文章</h2>
+            <div className="text-center mb-14">
+                <h2 className="mb-2">最新文章</h2>
+                <p className="text-sm text-text-secondary">技术分享与思考</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {recentPosts.map((post: any) => (
+                {recentPosts.map((post: any, i: number) => (
                     <Link key={post.id} to={`/blog/${post.id}`}
-                        className="card card-hover p-6 flex flex-col gap-3 animate-in">
-                        <span className="text-xs text-accent font-medium">{post.category}</span>
-                        <h3 className="text-lg font-semibold">{post.title}</h3>
-                        <p className="text-sm text-text-secondary line-clamp-2">{post.excerpt}</p>
+                        className="group card-glass p-6 cursor-pointer flex flex-col gap-4 animate-rise"
+                        style={{ animationDelay: `${i * 0.1}s` }}>
+                        <span className="text-xs text-accent font-semibold">{post.category}</span>
+                        <h3 className="text-lg font-semibold group-hover:text-accent transition-colors">{post.title}</h3>
+                        <p className="text-sm text-text-secondary/80 line-clamp-2 leading-relaxed">{post.excerpt}</p>
                         <span className="text-xs text-text-secondary mt-auto">{post.date}</span>
                     </Link>
                 ))}
             </div>
             <div className="text-center mt-10">
-                <Link to="/blog" className="text-sm text-accent hover:text-accent-hover transition-colors">
-                    查看全部文章 →
-                </Link>
+                <Link to="/blog" className="text-sm text-accent hover:text-accent-hover transition-colors">查看全部文章 →</Link>
             </div>
         </section>
 
         {/* Photography */}
-        <section className="py-24">
+        <section className="py-24 bg-bg-surface/30">
             <div className="max-w-6xl mx-auto px-6">
-                <h2 className="text-center mb-12">摄影作品</h2>
+                <div className="text-center mb-14">
+                    <h2 className="mb-2">摄影作品</h2>
+                    <p className="text-sm text-text-secondary">用镜头记录世界</p>
+                </div>
+                <Photography />
             </div>
-            <Photography />
         </section>
 
         {/* Travel Map */}
         <section className="max-w-6xl mx-auto px-6 py-24">
-            <h2 className="text-center mb-12">足迹</h2>
             <TravelMap />
         </section>
 
-        {/* Capabilities */}
-        <section className="max-w-5xl mx-auto px-6 py-24">
-            <h2 className="text-center mb-12">工具箱</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                    { label: '项目管理', desc: 'AI驱动的项目资源管理器', path: '/ai-manage' },
-                    { label: '招聘AI', desc: '简历智能匹配与评估', path: '/talent' },
-                    { label: '量化分析', desc: '股票数据与市场洞察', path: '/stock' },
-                    { label: '文章', desc: '技术分享与思考', path: '/blog' },
-                ].map(item => (
-                    <Link key={item.label} to={item.path}
-                        className="card card-hover p-6 text-center animate-in">
-                        <h3 className="text-lg font-semibold mb-2">{item.label}</h3>
-                        <p className="text-xs text-text-secondary">{item.desc}</p>
-                    </Link>
-                ))}
+        {/* Toolbox */}
+        <section className="py-24 bg-bg-surface/30">
+            <div className="max-w-5xl mx-auto px-6">
+                <div className="text-center mb-14">
+                    <h2 className="mb-2">工具箱</h2>
+                    <p className="text-sm text-text-secondary">AI 驱动的实用工具集</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                    {[
+                        { label: '项目管理', desc: 'AI驱动的项目资源管理器', path: '/ai-manage' },
+                        { label: '招聘AI', desc: '简历智能匹配与评估', path: '/talent' },
+                        { label: '量化分析', desc: '股票数据与市场洞察', path: '/stock' },
+                        { label: '文章', desc: '技术分享与思考', path: '/blog' },
+                    ].map((item, i) => (
+                        <Link key={item.label} to={item.path}
+                            className="card-glass p-6 text-center animate-rise"
+                            style={{ animationDelay: `${i * 0.1}s` }}>
+                            <h3 className="text-lg font-semibold mb-2 group-hover:text-accent">{item.label}</h3>
+                            <p className="text-xs text-text-secondary">{item.desc}</p>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </section>
     </div>

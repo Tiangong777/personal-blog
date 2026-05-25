@@ -22,7 +22,7 @@ const signals = [
 const StockPortal: React.FC = () => {
   return (
     <div className="container py-8 md:py-16">
-      <section className="relative overflow-hidden border border-accent/20 bg-glass-bg backdrop-blur-xl px-6 py-10 shadow-[0_0_80px_rgba(0,242,255,0.08)] md:px-10 md:py-14">
+      <section className="relative overflow-hidden border border-accent/20 bg-glass-bg backdrop-blur-xl px-6 py-10 shadow-lg md:px-10 md:py-14">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent" />
         <div className="absolute right-6 top-6 hidden text-accent/20 md:block">
           <LineChart size={180} strokeWidth={1} />

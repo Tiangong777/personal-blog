@@ -171,10 +171,10 @@ const TalentAI: React.FC = () => {
 
   return (
     <div className="container py-8 md:py-14">
-      <section className="relative overflow-hidden border border-accent/20 bg-glass-bg px-6 py-8 shadow-[0_0_90px_rgba(0,242,255,0.08)] backdrop-blur-xl md:px-10 md:py-12">
+      <section className="relative overflow-hidden border border-accent/20 bg-glass-bg px-6 py-8 shadow-lg backdrop-blur-xl md:px-10 md:py-12">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent to-transparent" />
-        <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
-        <div className="absolute -bottom-24 left-1/4 h-56 w-56 rounded-full bg-green-500/10 blur-3xl" />
+        <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-accent/10 blur-[120px]" />
+        <div className="absolute -bottom-24 left-1/4 h-56 w-56 rounded-full bg-green-500/10 blur-[120px]" />
 
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>

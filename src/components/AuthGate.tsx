@@ -122,7 +122,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ children }) => {
                     <button
                         type="submit"
                         disabled={isLoading || !password.trim()}
-                        className="w-full flex items-center justify-center gap-3 bg-accent text-black rounded-xl py-3 font-mono text-sm font-bold tracking-widest hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(0,242,255,0.2)] active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all"
+                        className="w-full flex items-center justify-center gap-3 bg-accent text-black rounded-xl py-3 font-mono text-sm font-bold tracking-widest hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all"
                     >
                         {isLoading ? <Loader2 size={18} className="animate-spin" /> : <LockKeyhole size={18} />}
                         {isLoading ? 'VERIFYING...' : 'UNLOCK_KNOWLEDGE'}
